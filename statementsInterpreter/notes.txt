@@ -1,0 +1,15 @@
+Relation operators are with arithmetic operator class
+Token is an object that can store any symbol thing of interest to me
+To share tokens between files in this program, you have to use the token to transport it
+You need the have a the means of communication between the different places in the program
+You have to create the a function in the sender to mkae the token and another function in the 
+reciever to receive it. 
+
+
+char c;
+cin >> c
+This gets rid of whitespaces that you may want
+cin.get(c) 
+This does not get rid of anything 
+
+Generally, you want to read everything in the program, don't throw away any spaces
