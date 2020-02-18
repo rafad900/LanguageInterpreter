@@ -20,10 +20,16 @@ public:
     Statements *statements();
 
     AssignmentStatement *assignStatement();
+    PrintStatement *printStatement();
+    ForStatement *forStatement();
 
-    ArithExprNode *expr();
-    ArithExprNode *term();
-    ArithExprNode *primary();
+
+    ExprNode *expr();
+    ExprNode *term();
+    ExprNode *primary();
+	ExprNode *relExpr();
+	ExprNode *relTerm();
+	ExprNode *relPrimary();
 
     std::string id();
 

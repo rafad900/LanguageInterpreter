@@ -50,18 +50,50 @@ class AssignmentStatement : public Statement {
 public:
     AssignmentStatement();
     // You need the variable (the thing before the equal sign) and the expression (the thing after the equal sign) 
-    AssignmentStatement(std::string lhsVar, ArithExprNode *rhsExpr);
+    AssignmentStatement(std::string lhsVar, ExprNode *rhsExpr);
 	// Getters 
     std::string &lhsVariable();
-    ArithExprNode *&rhsExpression();
+    ExprNode *&rhsExpression();
 	
     virtual void evaluate(SymTab &symTab);
     virtual void print();
 
-private:
+	private:
     std::string _lhsVariable;
-    ArithExprNode *_rhsExpression;
+    ExprNode *_rhsExpression;
 };
 
+class PrintStatement : public Statement {
+	public:
+		PrintStatement();
+		PrintStatement(ExprNode *s);
+		ExprNode *&printString();
+
+		virtual void evaluate(SymTab &symTab);
+		virtual void print();
+
+	private:
+		int _var;
+		ExprNode * _printString;
+};
+
+class ForStatement : public Statement {
+	public:
+		ForStatement();
+		ForStatement(AssignmentStatement *start, AssignmentStatement *incdec, ExprNode * condition, Statements *forStms);
+		ExprNode *&condition();
+		AssignmentStatement *&incdec();
+		AssignmentStatement *&start();
+		Statements *&stms();
+		
+		virtual void evaluate(SymTab &symTab);
+		virtual void print();
+
+	private:
+		AssignmentStatement *_start;
+		AssignmentStatement *_incdec;
+		ExprNode *_condition;
+		Statements *_stms;
+};
 
 #endif //EXPRINTER_STATEMENTS_HPP

@@ -29,8 +29,6 @@ int main(int argc, char *argv[]) {
     Parser parser(tokenizer);
 	// Create pointer to statements object from object returned from parser
     Statements *statements = parser.statements();
-    // Gets the last token in the tokenizer object
-   	statements->print();
     Token lastToken = tokenizer.getToken();
 	while (lastToken.eol()) 
 		lastToken = tokenizer.getToken();
@@ -42,11 +40,11 @@ int main(int argc, char *argv[]) {
     }
     // Creates this symtab object
     SymTab symTab;
-	
+	statements->evaluate(symTab);
 	// prints out the statements 
     statements->print();
     // uses the symTab to evaluate the statements
-    statements->evaluate(symTab);
+    //statements->evaluate(symTab); BEFORE, THE EVALUATE STATEMENT WAS SECOND, I MADE IT FIRST
     // Something like pushing the tokens into the symboltable and the uses this to print the out
     std::cout << std::endl << "Symbol table contains the following variables.\n";
     symTab.print();

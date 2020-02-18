@@ -22,8 +22,31 @@ public:
 
     void symbol(char c) { _symbol = c; }
     char symbol() { return _symbol; }
-
-    bool isSemiColon() const { return _symbol == ';'; }
+    void relationalSymbol(std::string s) { _relationalSymbol = s; }
+    std::string relationalSymbol() { return _relationalSymbol; }
+ 	void keywordSymbol(std::string s) { _keyword = s; }
+ 	std::string keywordSymbol() const { return _keyword; }
+	
+	bool isOpenBrac() const { return _symbol == '{'; }
+	bool isCloseBrac() const { return _symbol == '}'; }
+    bool isKeyword() const { return _name == "print" || _name == "for"; }
+    bool isPrint() const { return _name == "print"; }
+    bool isFor() const { return _name == "for"; }
+	bool isLessThan() const 	{ return _symbol == '<'; }
+	bool isGreaterThan() const 	{ return _symbol == '>'; }
+	bool isEqualTo() const 		{ return _relationalSymbol == "=="; }
+	bool isNotEqualTo() const	{ return _relationalSymbol == "!="; }
+	bool isLessOrEqual() const	{ return _relationalSymbol == "<="; }
+	bool isGreaterOrEqual() const	{return _relationalSymbol == ">="; }
+	bool isRelationalOperator() const { 
+		return	isLessThan() ||
+				isGreaterThan() ||
+				isEqualTo()		||
+				isNotEqualTo()	||
+				isLessOrEqual() 	||
+				isGreaterOrEqual();
+	}
+    bool isSemiColon() const 	{ return _symbol == ';'; }
     bool isAssignmentOperator() const              { return _symbol == '='; }
     bool isMultiplicationOperator() const { return _symbol == '*'; }
     bool isAdditionOperator() const       { return _symbol == '+'; }
@@ -56,7 +79,9 @@ private:
     bool _eof, _eol;
     bool _isWholeNumber;
     char _symbol;
+    std::string _keyword;
     int _wholeNumber;
+    std::string _relationalSymbol;
 };
 
 #endif //EXPRINTER_TOKEN_HPP

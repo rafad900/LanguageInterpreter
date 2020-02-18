@@ -11,12 +11,12 @@
 // Classes in this file define the internal representation of arithmetic expressions.
 
 
-// An ArithExprNode serves as the base class (super class) for arithmetic expression.
+// An ExprNode serves as the base class (super class) for arithmetic expression.
 // It forces the derived classes (subclasses) to implement two functions, print and
 // evaluate.
-class ArithExprNode {
+class ExprNode {
 public:
-    ArithExprNode(Token token);
+    ExprNode(Token token);
     Token token();
     virtual void print() = 0;
     virtual int evaluate(SymTab &symTab) = 0;
@@ -25,27 +25,27 @@ private:
     Token _token;
 };
 
-
 // An InfixExprNode is useful to represent binary arithmetic operators.
-class InfixExprNode: public ArithExprNode {  // An expression tree node.
+class InfixExprNode: public ExprNode {  // An expression tree node.
 
 public:
     InfixExprNode(Token tk);
 
-    ArithExprNode *&left();
-    ArithExprNode *&right();
+    ExprNode *&left();
+    ExprNode *&right();
     virtual void print();
     virtual int evaluate(SymTab &symTab);
 
+
 private:
-    ArithExprNode *_left, *_right;
+    ExprNode *_left, *_right;
 };
 
 // WholeNumber is a leaf-node in an expression tree. It corresponds to
 // a terminal in the production rules of the grammar that describes the
 // syntax of arithmetic expressions.
 
-class WholeNumber: public ArithExprNode {
+class WholeNumber: public ExprNode {
 public:
     WholeNumber(Token token);
     virtual void print();
@@ -56,7 +56,7 @@ public:
 // a terminal in the production rules of the grammar that describes the
 // syntax of arithmetic expressions.
 
-class Variable: public ArithExprNode {
+class Variable: public ExprNode {
 public:
     Variable(Token token);
     virtual void print();

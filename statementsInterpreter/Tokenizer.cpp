@@ -46,7 +46,7 @@ Token Tokenizer::getToken() {
     }
 
     char c;
-    
+    char t;
     while( inStream.get(c) && isspace(c) && c != '\n' )  // Skip spaces but not new-line chars.
         ;
     
@@ -61,7 +61,7 @@ Token Tokenizer::getToken() {
     }
 
     //    std::cout << "c = " << c << std::endl;
-
+	
     Token token;
     if( inStream.eof()) {
         token.eof() = true;
@@ -73,19 +73,35 @@ Token Tokenizer::getToken() {
         // we read the entire number in a function
         inStream.putback(c);
         token.setWholeNumber( readInteger() );
-
-    } else if( c == '=' )
-        token.symbol(c);
-    else if( c == '+' || c == '-' || c == '*' || c == '/' || c == '%')
+    } else if( c == '=' ) {
+    	if (inStream.peek() == '=') {
+    		inStream.get(t);
+    		token.relationalSymbol(std::string(1, c) + t);		
+        } else token.symbol(c);
+    } else if( c == '+' || c == '-' || c == '*' || c == '/' || c == '%')
         token.symbol(c);
     else if( c == ';' )
         token.symbol(c);
     else if( c == '(' || c == ')')
         token.symbol(c);
+    else if ( c == '{' )
+    	token.symbol(c);
+    else if ( c == '}')
+    	token.symbol(c);
     else if(isalpha(c)) {  // an identifier?
         // put c back into the stream so we can read the entire name in a function.
         inStream.putback(c);
         token.setName( readName() );
+   	} else if( c == '>' || c == '<') {
+   		if (inStream.peek() == '=') {
+   			inStream.get(t);
+   			token.relationalSymbol(std::string(1, c) + t);
+   		} else token.symbol(c);
+    } else if (c == '!') {
+    	if (inStream.peek() == '=') {
+    		inStream.get(t);
+    		token.relationalSymbol(std::string(1, c) + t);
+    	}
     } else {
         std::cout << "Unknown character in input. ->" << c << "<-" << std::endl;
       	exit(1);

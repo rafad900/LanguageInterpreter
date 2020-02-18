@@ -5,23 +5,25 @@
 #include<iostream>
 #include "ArithExpr.hpp"
 
-// ArithExprNode
-ArithExprNode::ArithExprNode(Token token): _token{token} {}
+// ExprNode
+ExprNode::ExprNode(Token token): _token{token} {}
 
-Token ArithExprNode::token() { return _token; }
+Token ExprNode::token() { return _token; }
 
 // InfixExprNode functions
-InfixExprNode::InfixExprNode(Token tk) : ArithExprNode{tk}, _left(nullptr), _right(nullptr) {}
+InfixExprNode::InfixExprNode(Token tk) : ExprNode{tk}, _left(nullptr), _right(nullptr) {}
 
-ArithExprNode *&InfixExprNode::left() { return _left; }
+ExprNode *&InfixExprNode::left() { return _left; }
 
-ArithExprNode *&InfixExprNode::right() { return _right; }
+ExprNode *&InfixExprNode::right() { return _right; }
 
 int InfixExprNode::evaluate(SymTab &symTab) {
     // Evaluates an infix expression using a post-order traversal of the expression tree.
     int lValue = left()->evaluate(symTab);
     int rValue = right()->evaluate(symTab);
-    std::cout << "InfixExprNode::evaluate: " << lValue << " " << token().symbol() << " " << rValue << std::endl;
+    if (token().symbol() == '\0') 
+    	std::cout << "InfixExprNode::evaluate: " << lValue << " " << token().relationalSymbol() << " " << rValue << std::endl;
+    else std::cout << "InfixExprNode::evaluate: " << lValue << " " << token().symbol() << " " << rValue << std::endl;
     if( token().isAdditionOperator() )
         return lValue + rValue;
     else if(token().isSubtractionOperator())
@@ -32,6 +34,18 @@ int InfixExprNode::evaluate(SymTab &symTab) {
         return lValue / rValue; // division by zero?
     else if( token().isModuloOperator() )
         return lValue % rValue;
+    else if( token().isGreaterThan()) 
+    	return lValue > rValue;
+    else if( token().isLessThan()) 
+    	return lValue < rValue;
+    else if( token().isGreaterOrEqual()) 
+    	return lValue >= rValue;
+    else if( token().isLessOrEqual()) 
+    	return lValue <= rValue;
+    else if( token().isEqualTo()) 
+    	return lValue == rValue;
+    else if( token().isNotEqualTo()) 
+    	return lValue != rValue;
     else {
         std::cout << "InfixExprNode::evaluate: don't know how to evaluate this operator\n";
         token().print();
@@ -47,7 +61,7 @@ void InfixExprNode::print() {
 }
 
 // WHoleNumber
-WholeNumber::WholeNumber(Token token): ArithExprNode{token} {}
+WholeNumber::WholeNumber(Token token): ExprNode{token} {}
 
 void WholeNumber::print() {
     token().print();
@@ -60,7 +74,7 @@ int WholeNumber::evaluate(SymTab &symTab) {
 
 // Variable
 
-Variable::Variable(Token token): ArithExprNode{token} {}
+Variable::Variable(Token token): ExprNode{token} {}
 
 void Variable::print() {
     token().print();
