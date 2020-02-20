@@ -21,7 +21,7 @@ class Statement {
 public:
     Statement();
 
-    virtual void print() = 0;
+    virtual void print(bool indent) = 0;
     virtual void evaluate(SymTab &symTab) = 0;
 
 };
@@ -37,7 +37,7 @@ public:
     void addStatement(Statement *statement);
     void evaluate(SymTab &symTab);
 
-    void print();
+    void print(bool indent);
 
 private:
     std::vector<Statement *> _statements;
@@ -56,7 +56,7 @@ public:
     ExprNode *&rhsExpression();
 	
     virtual void evaluate(SymTab &symTab);
-    virtual void print();
+    virtual void print(bool indent);
 
 	private:
     std::string _lhsVariable;
@@ -68,11 +68,13 @@ class PrintStatement : public Statement {
 		PrintStatement();
 		PrintStatement(ExprNode *s);
 		ExprNode *&printString();
+		std::string &getVarName();
 
 		virtual void evaluate(SymTab &symTab);
-		virtual void print();
+		virtual void print(bool indent);
 
 	private:
+		std::string _name;
 		int _var;
 		ExprNode * _printString;
 };
@@ -87,7 +89,7 @@ class ForStatement : public Statement {
 		Statements *&stms();
 		
 		virtual void evaluate(SymTab &symTab);
-		virtual void print();
+		virtual void print(bool indent);
 
 	private:
 		AssignmentStatement *_start;

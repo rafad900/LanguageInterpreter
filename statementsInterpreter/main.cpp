@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
     SymTab symTab;
 	statements->evaluate(symTab);
 	// prints out the statements 
-    statements->print();
+    statements->print(false);
     // uses the symTab to evaluate the statements
     //statements->evaluate(symTab); BEFORE, THE EVALUATE STATEMENT WAS SECOND, I MADE IT FIRST
     // Something like pushing the tokens into the symboltable and the uses this to print the out

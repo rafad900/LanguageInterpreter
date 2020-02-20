@@ -13,9 +13,11 @@ Statement::Statement() {}
 Statements::Statements() {}
 void Statements::addStatement(Statement *statement) { _statements.push_back(statement); }
 
-void Statements::print() {
+void Statements::print(bool indent) {
     for (auto s: _statements) {
-        s->print();
+    	if (indent) 
+    	std::cout << '\t';
+        s->print(false);
         std::cout << std::endl;
     }
 }
@@ -47,28 +49,31 @@ ExprNode *&AssignmentStatement::rhsExpression() {
     return _rhsExpression;
 }
 
-void AssignmentStatement::print() {
+void AssignmentStatement::print(bool indent) {
     std::cout << _lhsVariable << " = ";
     _rhsExpression->print();
 }
 
-PrintStatement::PrintStatement() : _printString{nullptr}, _var{NULL} {}
+PrintStatement::PrintStatement() : _printString{nullptr}, _var{NULL}, _name{NULL} {}
 
 PrintStatement::PrintStatement(ExprNode *s):
-		_printString{s} {}
+		_printString{s}, _name{s->token().getName()} {}
 
 ExprNode *&PrintStatement::printString() {
 	return _printString;
 }
 
-void PrintStatement::evaluate(SymTab &symTab) {
-	_var = symTab.getValueFor(_printString->token().getName());
-	print();
-	std::cout << std::endl;
+std::string &PrintStatement::getVarName() {
+	return _name;
 }
 
-void PrintStatement::print() {
-	std::cout << "(From Print statement): " << _var;
+void PrintStatement::evaluate(SymTab &symTab) {
+	_var = symTab.getValueFor(_name);
+	std::cout << _var << std::endl;
+}
+
+void PrintStatement::print(bool indent) {
+	std::cout << "print (" << _printString->token().getName() << ")";
 }
 
 ForStatement::ForStatement() : _start{nullptr}, _incdec{nullptr}, _condition{nullptr}, _stms{nullptr} {}
@@ -93,19 +98,16 @@ Statements *&ForStatement::stms() {
 }
 
 void ForStatement::evaluate(SymTab &symTab) {
-	std::cout << "Evaluatingfor loop ]\n";
 	_start->evaluate(symTab);
 	while (_condition->evaluate(symTab)) { 
 		_stms->evaluate(symTab);
 		_incdec->evaluate(symTab);
 	}
-	std::cout << "Finished for loop\n";
 }
 
-void ForStatement::print() {
-	std::cout << "This is the for statement" << std::endl;
-	std::cout << "for (";  _start->print(); std::cout << ";";  _condition->print(); std::cout << ";";  _incdec->print(); std::cout << ") {\n";
-	_stms->print();
+void ForStatement::print(bool indent) {
+	std::cout << "for (";  _start->print(false); std::cout << ";";  _condition->print(); std::cout << ";";  _incdec->print(false); std::cout << ") {\n";
+	_stms->print(true);
 	std::cout << "}\n";
 }
 
