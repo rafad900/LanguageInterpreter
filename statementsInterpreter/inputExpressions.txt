@@ -1,23 +1,23 @@
 size = 1 >= 1 < 1
 width = 1 * 2 * 3 * 4 + 5 + size 
 a = 10 * 5 > 15
-print(size)
-print(width)
+print size
+print width
 
-print(a)
+print a
 
 
 
 
 for (i = 0; i < 10; i = i + 1) {
-	print(i)
+	print i
 	for (a = 1; a < i; a = a + 1) {
 		for (z = 10; z >= 0; z = z - 1) {
-			print(z)
+			print z
 		}
 	}
 }
 
 total = size + width + a 
-print(size)
-print(total)
+print size
+print total

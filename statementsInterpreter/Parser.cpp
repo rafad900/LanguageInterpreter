@@ -67,19 +67,11 @@ PrintStatement *Parser::printStatement() {
 	if (!keyword.isKeyword())
 		die("Parser::printStatement", "Expected a keyword token, instead got", keyword);
 	
-	Token openPar = tokenizer.getToken();
-	if (!openPar.isOpenParen()) 
-		die("Parser::printStatement", "Expected a open parentheses, instead got", openPar);
-
 	Token prtString = tokenizer.getToken();
 	if (!prtString.isName())
 		die("Parser::printStatement", "Expected a name token, instead got", prtString);
-	
-	Token closingPar = tokenizer.getToken();
-	if (!closingPar.isCloseParen())
-		die("Parser::printStatement", "Expected a closing parentheses, instead got", closingPar);
 
-	return new PrintStatement(new Variable(prtString), prtString->getName());
+	return new PrintStatement(new Variable(prtString), prtString.getName());
 }
 
 

@@ -13,11 +13,9 @@ Statement::Statement() {}
 Statements::Statements() {}
 void Statements::addStatement(Statement *statement) { _statements.push_back(statement); }
 
-void Statements::print(bool indent) {
+void Statements::print() {
     for (auto s: _statements) {
-    	if (indent) 
-    	std::cout << '\t';
-        s->print(false);
+        s->print();
         std::cout << std::endl;
     }
 }
@@ -49,12 +47,12 @@ ExprNode *&AssignmentStatement::rhsExpression() {
     return _rhsExpression;
 }
 
-void AssignmentStatement::print(bool indent) {
+void AssignmentStatement::print() {
     std::cout << _lhsVariable << " = ";
     _rhsExpression->print();
 }
 
-PrintStatement::PrintStatement() : _printString{nullptr}, _var{NULL}, _name{NULL} {}
+PrintStatement::PrintStatement() : _printString{nullptr}, _var{0}, _name{"\0"} {}
 
 PrintStatement::PrintStatement(ExprNode *s, std::string name):
 		_printString{s}, _name{name} {}
@@ -72,8 +70,8 @@ void PrintStatement::evaluate(SymTab &symTab) {
 	std::cout << _var << std::endl;
 }
 
-void PrintStatement::print(bool indent) {
-	std::cout << "print (" << _printString->token().getName() << ")";
+void PrintStatement::print() {
+	std::cout << "print " << _printString->token().getName();
 }
 
 ForStatement::ForStatement() : _start{nullptr}, _incdec{nullptr}, _condition{nullptr}, _stms{nullptr} {}
@@ -105,9 +103,9 @@ void ForStatement::evaluate(SymTab &symTab) {
 	}
 }
 
-void ForStatement::print(bool indent) {
-	std::cout << "for (";  _start->print(false); std::cout << ";";  _condition->print(); std::cout << ";";  _incdec->print(false); std::cout << ") {\n";
-	_stms->print(true);
+void ForStatement::print() {
+	std::cout << "for (";  _start->print(); std::cout << ";";  _condition->print(); std::cout << ";";  _incdec->print(); std::cout << ") {\n";
+	_stms->print();
 	std::cout << "}\n";
 }
 
