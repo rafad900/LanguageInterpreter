@@ -56,8 +56,8 @@ void AssignmentStatement::print(bool indent) {
 
 PrintStatement::PrintStatement() : _printString{nullptr}, _var{NULL}, _name{NULL} {}
 
-PrintStatement::PrintStatement(ExprNode *s):
-		_printString{s}, _name{s->token().getName()} {}
+PrintStatement::PrintStatement(ExprNode *s, std::string name):
+		_printString{s}, _name{name} {}
 
 ExprNode *&PrintStatement::printString() {
 	return _printString;

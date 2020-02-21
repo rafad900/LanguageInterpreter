@@ -66,7 +66,7 @@ public:
 class PrintStatement : public Statement {
 	public:
 		PrintStatement();
-		PrintStatement(ExprNode *s);
+		PrintStatement(ExprNode *s, std::string name);
 		ExprNode *&printString();
 		std::string &getVarName();
 

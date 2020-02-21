@@ -79,7 +79,7 @@ PrintStatement *Parser::printStatement() {
 	if (!closingPar.isCloseParen())
 		die("Parser::printStatement", "Expected a closing parentheses, instead got", closingPar);
 
-	return new PrintStatement(new Variable(prtString));
+	return new PrintStatement(new Variable(prtString), prtString->getName());
 }
 
 
