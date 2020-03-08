@@ -83,7 +83,8 @@ PrintStatement *Parser::printStatement() {
 	if (!tok.eol()) 
 		die("Parser::printStatement", "Expected a EOL token, instead got", tok);
 
-	return new PrintStatement(new Variable(prtString));
+
+	return new PrintStatement(new Variable(prtString), prtString.getName());
 }
 
 
