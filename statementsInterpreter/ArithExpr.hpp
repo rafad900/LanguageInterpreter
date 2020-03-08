@@ -7,7 +7,6 @@
 
 #include "Token.hpp"
 #include "SymTab.hpp"
-
 // Classes in this file define the internal representation of arithmetic expressions.
 
 
@@ -19,7 +18,7 @@ public:
     ExprNode(Token token);
     Token token();
     virtual void print() = 0;
-    virtual int evaluate(SymTab &symTab) = 0;
+    virtual TypeDescriptor* evaluate(SymTab &symTab) = 0;
 
 private:
     Token _token;
@@ -34,7 +33,7 @@ public:
     ExprNode *&left();
     ExprNode *&right();
     virtual void print();
-    virtual int evaluate(SymTab &symTab);
+    virtual TypeDescriptor* evaluate(SymTab &symTab);
 
 
 private:
@@ -49,7 +48,7 @@ class WholeNumber: public ExprNode {
 public:
     WholeNumber(Token token);
     virtual void print();
-    virtual int evaluate(SymTab &symTab);
+    virtual TypeDescriptor* evaluate(SymTab &symTab);
 };
 
 // Varialbe is a leaf-node in an expression tree. It corresponds to
@@ -60,7 +59,24 @@ class Variable: public ExprNode {
 public:
     Variable(Token token);
     virtual void print();
-    virtual int evaluate(SymTab &symTab);
+    virtual TypeDescriptor* evaluate(SymTab &symTab);
+};
+
+// Just another leaf in the expression tree. It corresponds to a terminal 
+// in the production rules of the grammar that describes the 
+// syntax for arithmetic functions 
+class UserString: public ExprNode {
+public:	
+	UserString(Token token);
+	virtual void print();
+	virtual TypeDescriptor* evaluate(SymTab &symTab);
+};
+
+class DoubleNumber: public ExprNode {
+public:
+	DoubleNumber(Token token);
+	virtual void print();
+	virtual TypeDescriptor* evaluate(SymTab &symTab);
 };
 
 #endif //EXPRINTER_ARITHEXPR_HPP

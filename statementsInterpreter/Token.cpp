@@ -5,7 +5,7 @@
 #include <iostream>
 #include "Token.hpp"
 
-Token::Token(): _name{""}, _eof{false}, _eol{false}, _symbol{'\0'}, _isWholeNumber{false}, _relationalSymbol{"\0"}, _keyword{"\0"} {}
+Token::Token(): _name{""}, _eof{false}, _eol{false}, _symbol{'\0'}, _isWholeNumber{false}, _relationalSymbol{"\0"}, _keyword{"\0"}, _string{"\0"}, _double{false} {}
 
 void Token::print() const {
     if( eol() ) std::cout << "EOL\n" ;
@@ -32,5 +32,6 @@ void Token::print() const {
    	else if( isCloseBrac() ) std::cout << " } ";
 	else if( isPrint() ) std::cout << " print ";
 	else if( isFor() ) std::cout << " for ";
+	else if( isString() ) std::cout << getString();
     else std::cout << "Uninitialized token.\n";
 }

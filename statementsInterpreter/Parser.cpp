@@ -67,17 +67,21 @@ PrintStatement *Parser::printStatement() {
 	if (!keyword.isKeyword())
 		die("Parser::printStatement", "Expected a keyword token, instead got", keyword);
 	
-	Token openPar = tokenizer.getToken();
+	/*Token openPar = tokenizer.getToken();
 	if (!openPar.isOpenParen()) 
-		die("Parser::printStatement", "Expected a open parentheses, instead got", openPar);
+		die("Parser::printStatement", "Expected a open parentheses, instead got", openPar);*/
 
 	Token prtString = tokenizer.getToken();
 	if (!prtString.isName())
 		die("Parser::printStatement", "Expected a name token, instead got", prtString);
 	
-	Token closingPar = tokenizer.getToken();
+	/*Token closingPar = tokenizer.getToken();
 	if (!closingPar.isCloseParen())
-		die("Parser::printStatement", "Expected a closing parentheses, instead got", closingPar);
+		die("Parser::printStatement", "Expected a closing parentheses, instead got", closingPar);*/
+	
+	Token tok = tokenizer.getToken();
+	if (!tok.eol()) 
+		die("Parser::printStatement", "Expected a EOL token, instead got", tok);
 
 	return new PrintStatement(new Variable(prtString));
 }
@@ -99,6 +103,10 @@ AssignmentStatement *Parser::assignStatement() {
 	// This begins a sort of recursive call down the grammar rules 
     ExprNode *rightHandSideExpr = relExpr();
     // I removed the check for the semicolon and call the die function 
+    Token tok = tokenizer.getToken();
+    if (!tok.eol()) 
+    	die("Parser::assignStatement", "Expected an equal sign, instead got", tok);
+
     return new AssignmentStatement(varName.getName(), rightHandSideExpr);
 }
 
@@ -122,6 +130,13 @@ ForStatement *Parser::forStatement() {
 	Token secondSemi = tokenizer.getToken();
 	if (!secondSemi.isSemiColon())
 		die("Parser::forstatement", "Expected a semicolon, instead got" ,secondSemi);
+    
+    Token possibleeol = tokenizer.getToken();
+    if (possibleeol.eol()) 
+    	while (possibleeol.eol()) 
+    		possibleeol = tokenizer.getToken();
+   
+    tokenizer.ungetToken(); 
 	
 	AssignmentStatement *incdec = assignStatement();
 	
@@ -169,12 +184,14 @@ ExprNode *Parser::expr() {
 
 ExprNode *Parser::relExpr() {
 	// Uses the grammar rule relexpr -> relterm {!=, == relterm}
-    ExprNode *left = relTerm();
+    //ExprNode *left = relTerm();
+    ExprNode *left = relPrimary();
     Token tok = tokenizer.getToken();
-    while (tok.isEqualTo() || tok.isNotEqualTo()) {
+    while (tok.isEqualTo() || tok.isNotEqualTo() || tok.isLessThan() || tok.isGreaterThan() || tok.isLessOrEqual() || tok.isGreaterOrEqual() ) {
         InfixExprNode *p = new InfixExprNode(tok);
         p->left() = left;
-        p->right() = relTerm();
+        //p->right() = relTerm();
+        p->right() = relPrimary();
         left = p;
         tok = tokenizer.getToken();
     }
@@ -231,6 +248,8 @@ ExprNode *Parser::primary() {
         return new WholeNumber(tok);
     else if( tok.isName() )
         return new Variable(tok);
+    else if ( tok.isString() ) 
+    	return new UserString(tok);
     else if (tok.isOpenParen()) {
         ExprNode *p = expr();
         Token token = tokenizer.getToken();

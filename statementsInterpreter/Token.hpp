@@ -27,6 +27,9 @@ public:
  	void keywordSymbol(std::string s) { _keyword = s; }
  	std::string keywordSymbol() const { return _keyword; }
 	
+	bool isPeriod() const { return _symbol == '.'; }
+	bool isSingleQuotes() const { return _symbol == '\''; }
+	bool isDoubleQuotes() const { return _symbol == '\"'; }
 	bool isOpenBrac() const { return _symbol == '{'; }
 	bool isCloseBrac() const { return _symbol == '}'; }
     bool isKeyword() const { return _name == "print" || _name == "for"; }
@@ -60,13 +63,18 @@ public:
                isModuloOperator() ||
                isDivisionOperator();
     }
-    bool isName() const                   { return _name.length() > 0; }
-    std::string getName() const                  { return _name; }
+    bool isName() const         { return _name.length() > 0; }
+    std::string getName() const { return _name; }
     void setName(std::string n) { _name = n; }
+	void setString(std::string s) { _string = s; }
 
+	bool isDouble() { return _double; }
+	double getDouble() const { return _double; }
     bool &isWholeNumber() { return _isWholeNumber; }
+    bool isString() const { return _string.length() > 0; }
     bool isWholeNumber() const { return _isWholeNumber; }
     int getWholeNumber() const { return _wholeNumber; }
+    std::string getString() const { return _string; }
     void setWholeNumber(int n) {
         _wholeNumber = n;
         isWholeNumber() = true;
@@ -75,6 +83,7 @@ public:
     void print() const;
 
 private:
+	double _double;
     std::string _name;
     bool _eof, _eol;
     bool _isWholeNumber;
@@ -82,6 +91,7 @@ private:
     std::string _keyword;
     int _wholeNumber;
     std::string _relationalSymbol;
+	std::string _string;
 };
 
 #endif //EXPRINTER_TOKEN_HPP

@@ -25,8 +25,10 @@ private:
     std::ifstream &inStream;
     std::vector<Token> _tokens; 
     int numoflines = 0;
+    
 
 private:
+	std::string readString();
     std::string readName();
     int readInteger();
 };

@@ -6,6 +6,25 @@
 #include <string>
 #include "Tokenizer.hpp"
 
+std::string Tokenizer::readString() {
+	// This function is called when the character read 
+	// is an open quote character signifying the beginning
+	// of a string
+	std::string _string;
+	char c;
+	while( inStream.get(c) && isalnum(c) && isspace(c) ) {
+		_string += c;
+	}
+	if (!(c == '\"')) {
+		std::cout << "No closing quote on the string: " << _string << std::endl;
+		exit(1);
+	}
+	if (inStream.good()) 
+		inStream.putback(c);
+	return _string;
+}
+
+
 std::string Tokenizer::readName() {
     // This function is called when it is known that
     // the first character in input is an alphabetic character.
@@ -88,6 +107,8 @@ Token Tokenizer::getToken() {
     	token.symbol(c);
     else if ( c == '}')
     	token.symbol(c);
+    else if ( c == '\"' || c == '\'')
+    	token.setString( readString() );
     else if(isalpha(c)) {  // an identifier?
         // put c back into the stream so we can read the entire name in a function.
         inStream.putback(c);

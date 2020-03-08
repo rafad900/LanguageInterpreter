@@ -75,7 +75,7 @@ class PrintStatement : public Statement {
 
 	private:
 		std::string _name;
-		int _var;
+		TypeDescriptor *_var;
 		ExprNode * _printString;
 };
 
