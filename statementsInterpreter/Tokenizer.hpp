@@ -28,7 +28,7 @@ private:
     
 
 private:
-	std::string readString();
+	std::string readString( char p );
     std::string readName();
     int readInteger();
 };

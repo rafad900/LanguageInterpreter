@@ -40,8 +40,10 @@ int main(int argc, char *argv[]) {
     }
     // Creates this symtab object
     SymTab symTab;
+    std::cout << "ABOUT TO EVALUATE\n";
 	statements->evaluate(symTab);
 	// prints out the statements 
+    std::cout << "\nABOUT TO PRINT\n";
     statements->print();
     // uses the symTab to evaluate the statements
     //statements->evaluate(symTab); BEFORE, THE EVALUATE STATEMENT WAS SECOND, I MADE IT FIRST

@@ -1,3 +1,9 @@
 a = 100
-b = "This here is the best"
+b = "This"
+c = " IS MY HOUSE"
+d = b + c + "fuck you"
 
+print d
+
+f = d * 2
+print f

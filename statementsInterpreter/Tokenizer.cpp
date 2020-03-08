@@ -6,21 +6,26 @@
 #include <string>
 #include "Tokenizer.hpp"
 
-std::string Tokenizer::readString() {
+std::string Tokenizer::readString( char p ) {
 	// This function is called when the character read 
 	// is an open quote character signifying the beginning
 	// of a string
 	std::string _string;
 	char c;
-	while( inStream.get(c) && isalnum(c) && isspace(c) ) {
-		_string += c;
+	while( inStream.get(c) && (isalnum(c) || isspace(c) || c == '\'' || c == '\"') ) {
+        if (c == '\n') {
+            std::cout << "No closing quote on the string: " << _string << std::endl;
+            exit(1);
+        }
+        if ((c == '\'' || c == '\"') && c != p) {
+            std::cout << "Incorrect closing quote for the string: " << _string << std::endl;
+            exit(1);
+        }
+        if (c == p) 
+            break;
+    	_string += c;
 	}
-	if (!(c == '\"')) {
-		std::cout << "No closing quote on the string: " << _string << std::endl;
-		exit(1);
-	}
-	if (inStream.good()) 
-		inStream.putback(c);
+    
 	return _string;
 }
 
@@ -68,18 +73,11 @@ Token Tokenizer::getToken() {
     char t;
     while( inStream.get(c) && isspace(c) && c != '\n' )  // Skip spaces but not new-line chars.
         ;
-    
-
-    /*while( inStream.get(c) && isspace(c) )  // Skip spaces including the new-line chars.
-        ;
-	*/
 
     if(inStream.bad()) {
         std::cout << "Error while reading the input stream in Tokenizer.\n";
         exit(1);
     }
-
-    //    std::cout << "c = " << c << std::endl;
 	
     Token token;
     if( inStream.eof()) {
@@ -108,7 +106,7 @@ Token Tokenizer::getToken() {
     else if ( c == '}')
     	token.symbol(c);
     else if ( c == '\"' || c == '\'')
-    	token.setString( readString() );
+    	token.setString( readString(c) );
     else if(isalpha(c)) {  // an identifier?
         // put c back into the stream so we can read the entire name in a function.
         inStream.putback(c);

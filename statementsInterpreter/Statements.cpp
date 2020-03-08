@@ -35,25 +35,6 @@ AssignmentStatement::AssignmentStatement(std::string lhsVar, ExprNode *rhsExpr):
 void AssignmentStatement::evaluate(SymTab &symTab) {
 	// Calculate the thing afte the equal sign
     TypeDescriptor *rhs = rhsExpression()->evaluate(symTab);
-    /* 
-     * MIGHT NOT NEED THIS SINCE THE RETURN VALUE IS ALREADY A TYPE DESCRIPTOR WITH ITS OWN CHILD SAVED INTO IT
-    TypeDescriptor *td;
-    if (typeid(rhs) == typeid(int)) {
-    	IntegerTypeDescriptor *temp = new IntegerTypeDescriptor(lhsVariable(), rhs);
-    	td = temp;
-    } else if (typeid(rhs) == typeid(double)) {
-    	DoubleTypeDescriptor *temp = new DoubleTypeDescriptor(lhsVariable(), rhs);
-    	td = temp;
-    } else if (typeid(rhs) == typeid(bool)) {
-    	BooleanTypeDescriptor *temp = new BooleanTypeDescriptor(lhsVariable(), rhs);
-    	td = temp;
-    } else {
-    	rhs = (std::string) rhs;
-    	StringTypeDescriptor *temp = new StringTypeDescriptor(lhsVariable(), rhs);
-    	td = temp;
-    }
-    */
-    // Then set the value of the variable to the rhs
     symTab.setValueFor(lhsVariable(), rhs);
 }
 
@@ -88,7 +69,7 @@ void PrintStatement::evaluate(SymTab &symTab) {
 	std::cout << _var << std::endl;
 }
 
-void PrintStatement::print(bool indent) {
+void PrintStatement::print() {
 	std::cout << "print " << _printString->token().getName();
 }
 
