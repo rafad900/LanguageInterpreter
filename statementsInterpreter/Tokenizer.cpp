@@ -10,6 +10,7 @@ void Tokenizer::readComment() {
 	char c;
 	while ( inStream.get(c) && c != '\n') 
 		;
+	numoflines++;
 }
 
 std::string Tokenizer::readString( char p ) {
