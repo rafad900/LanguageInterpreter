@@ -30,6 +30,7 @@ public:
 	ExprNode *relExpr();
 	ExprNode *relTerm();
 	ExprNode *relPrimary();
+	ExprNode *factor();
 
     std::string id();
 

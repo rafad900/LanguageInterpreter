@@ -17,8 +17,10 @@ class SymTab {
 public:
     void setValueFor(std::string vName, TypeDescriptor *td);
     bool isDefined(std::string vName);
+    bool isDefined(TypeDescriptor *value);
     TypeDescriptor* getValueFor(std::string vName);
     void print();
+    ~SymTab();
 
 private:
     std::map<std::string, TypeDescriptor *> symTab;

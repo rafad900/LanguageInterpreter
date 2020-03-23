@@ -38,6 +38,7 @@ public:
     void evaluate(SymTab &symTab);
 
     void print();
+    ~Statements();
 
 private:
     std::vector<Statement *> _statements;
@@ -66,17 +67,17 @@ public:
 class PrintStatement : public Statement {
 	public:
 		PrintStatement();
-		PrintStatement(ExprNode *s, std::string name);
-		ExprNode *&printString();
-		std::string &getVarName();
+		PrintStatement( std::vector<ExprNode *> testlist);
+		std::vector<ExprNode *> printString();
 
 		virtual void evaluate(SymTab &symTab);
 		virtual void print();
 
 	private:
-		std::string _name;
-		TypeDescriptor *_var;
-		ExprNode * _printString;
+		std::vector<ExprNode *> _testlist;
+//		std::string _name;
+//		TypeDescriptor *_var;
+//		ExprNode * _printString;
 };
 
 class ForStatement : public Statement {

@@ -65,26 +65,35 @@ Statements *Parser::statements() {
 PrintStatement *Parser::printStatement() {
 	Token keyword = tokenizer.getToken();
 	if (!keyword.isKeyword())
-		die("Parser::printStatement", "Expected a keyword token, instead got", keyword);
-	
-	/*Token openPar = tokenizer.getToken();
-	if (!openPar.isOpenParen()) 
-		die("Parser::printStatement", "Expected a open parentheses, instead got", openPar);*/
+		die("Parser::printStatement", "Expected a keyword token, instead got", keyword); 
 
-	Token prtString = tokenizer.getToken();
-	if (!prtString.isName())
-		die("Parser::printStatement", "Expected a name token, instead got", prtString);
+	/*Token pop = tokenizer.getToken();
+	if (!pop.isOpenParen())
+		tokenizer.ungetToken();*/
 	
-	/*Token closingPar = tokenizer.getToken();
-	if (!closingPar.isCloseParen())
-		die("Parser::printStatement", "Expected a closing parentheses, instead got", closingPar);*/
+	std::vector<ExprNode *> testlist;
+	Token test = tokenizer.getToken();
+	while (test.isString() || test.isName() || test.isComma() || test.isOpenParen() ) {
+		if (test.isComma()) {
+			test = tokenizer.getToken();
+			continue;
+		}
+		tokenizer.ungetToken();
+		testlist.push_back( relExpr() );	// MAKE ALL THE NEW EXPRESSION NODES AND SAVE THEM INTO THE VECTOR 
+		test = tokenizer.getToken();
+	}
+
+	tokenizer.ungetToken();
+
+	/*Token pcp = tokenizer.getToken();
+	if (!pcp.isCloseParen()) 
+		tokenizer.ungetToken();*/
 	
-	Token tok = tokenizer.getToken();
-	if (!tok.eol()) 
-		die("Parser::printStatement", "Expected a EOL token, instead got", tok);
+	//Token tok = tokenizer.getToken();
+	//if (!tok.eol()) 
+	//	die("Parser::printStatement", "Expected a EOL token, instead got", tok);
 
-
-	return new PrintStatement(new Variable(prtString), prtString.getName());
+	return new PrintStatement(testlist);
 }
 
 
@@ -200,6 +209,25 @@ ExprNode *Parser::relExpr() {
     return left;
 }
 
+ExprNode *Parser::factor() {	
+	Token tok = tokenizer.getToken();
+	ExprNode *left;
+	if ( tok.isSubtractionOperator() ) {
+		Token op;
+		op.symbol('*');
+		Token l;
+		l.setWholeNumber(-1);
+		InfixExprNode *p = new InfixExprNode(op);
+		p->left() = new WholeNumber(l);
+		p->right() = factor();
+		left = p;
+	} else {
+		tokenizer.ungetToken();
+		left = primary();
+	}
+	return left;
+}
+
 
 ExprNode *Parser::term() {
     // This function parses the grammar rules:
@@ -208,13 +236,13 @@ ExprNode *Parser::term() {
     // <mult_op> -> * | / | %
 
     // However, the implementation makes the <mult-op> left associate.
-    ExprNode *left = primary();
+    ExprNode *left = factor();
     Token tok = tokenizer.getToken();
 	// If there no more terms to look for, and only a semicolon, the while look will not return 
     while (tok.isMultiplicationOperator() || tok.isDivisionOperator() || tok.isModuloOperator()) {
         InfixExprNode *p = new InfixExprNode(tok);
         p->left() = left;
-        p->right() = primary();
+        p->right() = factor();
         left = p;
         tok = tokenizer.getToken();
     }
@@ -247,12 +275,14 @@ ExprNode *Parser::primary() {
 
     if (tok.isWholeNumber() )
         return new WholeNumber(tok);
+	else if ( tok.isDouble() )
+    	return new DoubleNumber(tok);
     else if( tok.isName() )
         return new Variable(tok);
     else if ( tok.isString() ) 
     	return new UserString(tok);
     else if (tok.isOpenParen()) {
-        ExprNode *p = expr();
+        ExprNode *p = relExpr();
         Token token = tokenizer.getToken();
         if (!token.isCloseParen())
             die("Parser::primary", "Expected close-parenthesis, instead got", token);

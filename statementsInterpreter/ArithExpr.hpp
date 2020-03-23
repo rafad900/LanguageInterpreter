@@ -38,6 +38,7 @@ public:
 
 private:
     ExprNode *_left, *_right;
+    TypeDescriptor *result;
 };
 
 // WholeNumber is a leaf-node in an expression tree. It corresponds to

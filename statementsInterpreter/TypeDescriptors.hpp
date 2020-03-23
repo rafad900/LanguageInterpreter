@@ -17,7 +17,7 @@ public:
     IntegerTypeDescriptor(int value);
     std::string name();  // returns the name of the integer variable.
     int intValue();      // returns its value.
-    //virtual ~TypeDescriptor() {}
+    virtual ~IntegerTypeDescriptor();
 
 private:
 	std::string _name;
@@ -30,7 +30,7 @@ public:
 	DoubleTypeDescriptor(double value);
 	std::string name();
 	double doubleValue();
-	//virtual ~TypeDescriptor() {}
+	virtual ~DoubleTypeDescriptor();
 
 private:
 	std::string _name;
@@ -43,24 +43,27 @@ public:
 	StringTypeDescriptor(std::string value);
 	std::string name();
 	std::string stringValue();
-	//virtual ~TypeDescriptor() {}
+	virtual ~StringTypeDescriptor();
 
 private:
 	std::string _name;
 	std::string _value;
 };
 
+/*
+ *
+ *  THIS CLASS IS UNECESSARY AT THE MOMENT 
 class BooleanTypeDescriptor: public TypeDescriptor {
 public:
 	BooleanTypeDescriptor(std::string variableName, bool value);
 	BooleanTypeDescriptor(std::string variableName);
 	std::string name();
 	bool boolValue();
-	//virtual ~TypeDescriptor() {}
+	virtual ~BooleanTypeDescriptor() {}
 
 private:
 	std::string _name;
 	bool _value;
 };
-
+*/ 
 

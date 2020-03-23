@@ -30,7 +30,8 @@ private:
 private:
 	std::string readString( char p );
     std::string readName();
-    int readInteger();
+    std::string readNumber();
+    void readComment();
 };
 
 #endif //EXPRINTER_TOKENIZER_HPP

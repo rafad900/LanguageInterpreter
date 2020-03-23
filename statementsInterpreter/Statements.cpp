@@ -25,6 +25,14 @@ void Statements::evaluate(SymTab &symTab) {
         s->evaluate(symTab);
 }
 
+Statements::~Statements() {
+	std::vector<Statement *>::iterator ptr;
+	for (ptr = _statements.begin(); ptr < _statements.end(); ptr++) 
+		delete *ptr;
+		// WOULD ALSO NEED TO ADD DESTRUCTOR TO EACH OF THE ExprNode CHILDREN CLASSES 
+		// BUT THAT SEEMS UNECESSARY REALLY
+}
+
 // AssignmentStatement
 
 AssignmentStatement::AssignmentStatement() : _lhsVariable{""}, _rhsExpression{nullptr} {}
@@ -33,7 +41,6 @@ AssignmentStatement::AssignmentStatement(std::string lhsVar, ExprNode *rhsExpr):
         _lhsVariable{lhsVar}, _rhsExpression{rhsExpr} {}
 
 void AssignmentStatement::evaluate(SymTab &symTab) {
-	// Calculate the thing afte the equal sign
     TypeDescriptor *rhs = rhsExpression()->evaluate(symTab);
     symTab.setValueFor(lhsVariable(), rhs);
 }
@@ -51,26 +58,45 @@ void AssignmentStatement::print() {
     _rhsExpression->print();
 }
 
-PrintStatement::PrintStatement() : _printString{nullptr}, _var{0}, _name{"\0"} {}
+PrintStatement::PrintStatement() : _testlist{NULL} {}
 
-PrintStatement::PrintStatement(ExprNode *s, std::string name):
-		_printString{s}, _name{name} {}
+PrintStatement::PrintStatement(std::vector<ExprNode *> testlist): _testlist{testlist} {}
 
-ExprNode *&PrintStatement::printString() {
-	return _printString;
-}
-
-std::string &PrintStatement::getVarName() {
-	return _name;
+std::vector<ExprNode *> PrintStatement::printString() {
+	return _testlist;
 }
 
 void PrintStatement::evaluate(SymTab &symTab) {
-	_var = symTab.getValueFor(_name);
-	std::cout << _var << std::endl;
+	for (ExprNode *e: _testlist) {
+		if (e->token().isName()) {
+			TypeDescriptor *parent = symTab.getValueFor(e->token().getName());
+			if (parent->type() == TypeDescriptor::INTEGER) 
+				std::cout << dynamic_cast<IntegerTypeDescriptor *>(parent)->intValue();
+			else if (parent->type() == TypeDescriptor::DOUBLE)
+				std::cout << dynamic_cast<DoubleTypeDescriptor *>(parent)->doubleValue();
+			else 
+				std::cout << "\"" << dynamic_cast<StringTypeDescriptor *>(parent)->stringValue() << "\"";;
+			std::cout << " ";
+		} else {
+			TypeDescriptor *parent = e->evaluate(symTab);
+			if (parent->type() == TypeDescriptor::INTEGER) 
+				std::cout << dynamic_cast<IntegerTypeDescriptor *>(parent)->intValue();
+			else if (parent->type() == TypeDescriptor::DOUBLE)
+				std::cout << dynamic_cast<DoubleTypeDescriptor *>(parent)->doubleValue();
+			else 
+				std::cout << "\"" << dynamic_cast<StringTypeDescriptor *>(parent)->stringValue() << "\"";
+			std::cout << " ";
+		}
+	}
+	std::cout << std::endl;
 }
 
 void PrintStatement::print() {
-	std::cout << "print " << _printString->token().getName();
+	std::cout << "print ";
+	for (ExprNode *e :_testlist) {
+		e->print();
+		std::cout << " ";
+	}
 }
 
 ForStatement::ForStatement() : _start{nullptr}, _incdec{nullptr}, _condition{nullptr}, _stms{nullptr} {}
@@ -96,7 +122,8 @@ Statements *&ForStatement::stms() {
 
 void ForStatement::evaluate(SymTab &symTab) {
 	_start->evaluate(symTab);
-	while (_condition->evaluate(symTab)) { 
+	while ( dynamic_cast<IntegerTypeDescriptor *>(_condition->evaluate(symTab))->intValue() ) {
+ 
 		_stms->evaluate(symTab);
 		_incdec->evaluate(symTab);
 	}

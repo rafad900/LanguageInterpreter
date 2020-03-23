@@ -5,7 +5,7 @@
 #include<iostream>
 #include "ArithExpr.hpp"
 
-extern TypeDescriptor* perform_operation( TypeDescriptor* lValue, TypeDescriptor* rValue, bool mul, bool div, bool add, bool sub);
+extern TypeDescriptor* perform_operation( TypeDescriptor* lValue, TypeDescriptor* rValue, int opcode);
 
 // ExprNode
 ExprNode::ExprNode(Token token): _token{token} {}
@@ -23,38 +23,84 @@ TypeDescriptor* InfixExprNode::evaluate(SymTab &symTab) {
     // Evaluates an infix expression using a post-order traversal of the expression tree.
     TypeDescriptor* lValue = left()->evaluate(symTab);
     TypeDescriptor* rValue = right()->evaluate(symTab);
-    
-    if (token().symbol() == '\0') 
+    TypeDescriptor* res;
+    /*if (token().symbol() == '\0') 
     	std::cout << "InfixExprNode::evaluate: " << lValue << " " << token().relationalSymbol() << " " << rValue << std::endl;
-    else std::cout << "InfixExprNode::evaluate: " << lValue << " " << token().symbol() << " " << rValue << std::endl;
-    if( token().isAdditionOperator() )
-		return perform_operation(lValue, rValue, 0, 0, 1, 0);
-    else if(token().isSubtractionOperator())
-		return perform_operation(lValue, rValue, 0, 0, 0, 1);
-    else if(token().isMultiplicationOperator())
-		return perform_operation(lValue, rValue, 1, 0, 0, 0);
-    else if(token().isDivisionOperator())
-		return perform_operation(lValue, rValue, 0, 1, 0, 0);
-    /*else if( token().isModuloOperator() )
-        return lValue % rValue;
-    else if( token().isGreaterThan()) 
-    	return lValue > rValue;
-    else if( token().isLessThan()) 
-    	return lValue < rValue;
-    else if( token().isGreaterOrEqual()) 
-    	return lValue >= rValue;
-    else if( token().isLessOrEqual()) 
-    	return lValue <= rValue;
-    else if( token().isEqualTo()) 
-    	return lValue == rValue;
-    else if( token().isNotEqualTo()) 
-    	return lValue != rValue;*/
-    else {
+    else std::cout << "InfixExprNode::evaluate: " << lValue << " " << token().symbol() << " " << rValue << std::endl;*/
+    if( token().isAdditionOperator() ) {
+    	res = perform_operation(lValue, rValue, 1);
+    	//delete lValue;
+    	//delete rValue;
+		//return res;
+    } else if(token().isSubtractionOperator()) {
+		res = perform_operation(lValue, rValue, 2);
+    	//delete lValue;
+    	//delete rValue;
+		//return res;
+    } else if(token().isMultiplicationOperator()) {
+		res = perform_operation(lValue, rValue, 3);
+    	//delete lValue;
+    	//delete rValue;
+		//return res;
+    } else if(token().isDivisionOperator()) {
+    	if (token().isIntDivision()) {
+			res = perform_operation(lValue, rValue, 12);
+    		//delete lValue;
+    		//delete rValue;
+			//return res;
+    	} else {
+			res = perform_operation(lValue, rValue, 4);
+    		//delete lValue;
+    		//delete rValue;
+			//return res;
+		}
+    } else if( token().isModuloOperator() ) {
+		res = perform_operation(lValue, rValue, 11);
+    	//delete lValue;
+    	//delete rValue;
+		//return res;
+    } else if( token().isGreaterThan()) {
+		res = perform_operation(lValue, rValue, 6);
+    	//delete lValue;
+    	//delete rValue;
+		//return res;
+    } else if( token().isLessThan()) {
+		res = perform_operation(lValue, rValue, 5);
+    	//delete lValue;
+    	//delete rValue;
+		//return res;
+    } else if( token().isGreaterOrEqual()) {
+    	res = perform_operation(lValue, rValue, 9);
+    	//delete lValue
+    	//delete rValue;
+		//return res;
+    } else if( token().isLessOrEqual()) {
+    	res = perform_operation(lValue, rValue, 8);
+    	//delete lValue;
+    	//delete rValue;
+		//return res;
+    } else if( token().isEqualTo()) {
+    	res = perform_operation(lValue, rValue, 7);
+    	//delete lValue;
+    	//delete rValue;
+		//return res;
+    } else if( token().isNotEqualTo()) {
+      	res = perform_operation(lValue, rValue, 10);
+    	//delete lValue;
+    	//delete rValue;
+		//return res;
+    } else {
         std::cout << "InfixExprNode::evaluate: don't know how to evaluate this operator\n";
         token().print();
         std::cout << std::endl;
         exit(2);
     }
+    if (!symTab.isDefined(lValue)) 
+    	delete lValue;
+    if (!symTab.isDefined(rValue))
+    	delete rValue;
+	result = res;
+    return res;
 }
 
 void InfixExprNode::print() {
@@ -71,7 +117,7 @@ void WholeNumber::print() {
 }
 
 TypeDescriptor* WholeNumber::evaluate(SymTab &symTab) {
-    std::cout << "WholeNumber::evaluate: returning " << token().getWholeNumber() << std::endl;
+    //std::cout << "WholeNumber::evaluate: returning " << token().getWholeNumber() << std::endl;
     TypeDescriptor *value = new IntegerTypeDescriptor(token().getWholeNumber());
     return value;
 }
@@ -86,10 +132,10 @@ void Variable::print() {
 
 TypeDescriptor* Variable::evaluate(SymTab &symTab) {
     if( ! symTab.isDefined(token().getName())) {
-        std::cout << "Variable::evaluate: Use of undefined variable, " << token().getName() << std::endl;
+     //   std::cout << "Variable::evaluate: Use of undefined variable, " << token().getName() << std::endl;
         exit(1);
     }
-    std::cout << "Variable::evaluate: returning " << symTab.getValueFor(token().getName()) << std::endl;
+    //std::cout << "Variable::evaluate: returning " << symTab.getValueFor(token().getName()) << std::endl;
     TypeDescriptor *value = symTab.getValueFor(token().getName());
     return value;
 }
@@ -99,11 +145,13 @@ TypeDescriptor* Variable::evaluate(SymTab &symTab) {
 UserString::UserString(Token token): ExprNode{token} {}
 
 void UserString::print() {
+	std::cout << "\"";
 	token().print();
+	std::cout << "\"";
 }
 
 TypeDescriptor* UserString::evaluate(SymTab &symTab) {
-    std::cout << "UserString::evaluate: returning " << token().getString() << std::endl;
+    //std::cout << "UserString::evaluate: returning " << token().getString() << std::endl;
     TypeDescriptor *value = new StringTypeDescriptor(token().getString());
     return value;
 }
@@ -117,7 +165,7 @@ void DoubleNumber::print() {
 }
 
 TypeDescriptor* DoubleNumber::evaluate(SymTab &symTab) {
-    std::cout << "UserString::evaluate: returning " << token().getDouble() << std::endl;
+    //std::cout << "Double::evaluate: returning " << token().getDouble() << std::endl;
     TypeDescriptor *value = new DoubleTypeDescriptor(token().getDouble());
     return value;
 }

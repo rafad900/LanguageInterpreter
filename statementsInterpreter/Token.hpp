@@ -27,7 +27,9 @@ public:
  	void keywordSymbol(std::string s) { _keyword = s; }
  	std::string keywordSymbol() const { return _keyword; }
 	
+	bool isHash() const { return _symbol == '#'; }
 	bool isPeriod() const { return _symbol == '.'; }
+	bool isComma() const { return _symbol == ','; }
 	bool isSingleQuotes() const { return _symbol == '\''; }
 	bool isDoubleQuotes() const { return _symbol == '\"'; }
 	bool isOpenBrac() const { return _symbol == '{'; }
@@ -56,6 +58,8 @@ public:
     bool isSubtractionOperator() const    { return _symbol == '-'; }
     bool isModuloOperator() const         { return _symbol == '%'; }
     bool isDivisionOperator() const       { return _symbol == '/'; }
+    bool isIntDivision() const 			  { return _isIntDivisionOp; }
+    void setIntDivision() 				  { _isIntDivisionOp = true; } 
     bool isArithmeticOperator() const {
         return isMultiplicationOperator() ||
                isAdditionOperator() ||
@@ -67,27 +71,36 @@ public:
     std::string getName() const { return _name; }
     void setName(std::string n) { _name = n; }
 	void setString(std::string s) { _string = s; }
-
-	bool isDouble() { return _double; }
+	
+	bool &isDouble() { return _isDouble; }
+	bool isDouble() const { return _isDouble; }
 	double getDouble() const { return _double; }
+	void setDouble(double d) { 
+		_double = d;
+		isDouble() = true;
+	}
+
     bool &isWholeNumber() { return _isWholeNumber; }
-    bool isString() const { return _string.length() > 0; }
     bool isWholeNumber() const { return _isWholeNumber; }
     int getWholeNumber() const { return _wholeNumber; }
-    std::string getString() const { return _string; }
     void setWholeNumber(int n) {
         _wholeNumber = n;
         isWholeNumber() = true;
     }
+	
+    std::string getString() const { return _string; }
+    bool isString() const { return _string.length() > 0; }
 
     void print() const;
 
 private:
 	double _double;
+	bool _isDouble;
     std::string _name;
     bool _eof, _eol;
     bool _isWholeNumber;
     char _symbol;
+    bool _isIntDivisionOp;
     std::string _keyword;
     int _wholeNumber;
     std::string _relationalSymbol;

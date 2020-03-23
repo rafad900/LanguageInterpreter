@@ -1,9 +1,85 @@
-a = 100
-b = "This"
-c = " IS MY HOUSE"
-d = b + c + "fuck you"
+for (i = 0
+; i < 3;
+ i = i+1
+){
+    for (j = 0
+    ; j < 3;
+     j = j+1
+    ){
+    print
+    print i
+    print j
+    print
+    }
+}
 
-print d
+#----Test Cases---
+print
+print 
+print
+print
+b = 10 / 3               # b is a variable of double datatype
+a = 10 + b - 3        # a is a variable of Integer datatype
+c = 2.5               # c is a variable of Double datatype
+d = 10.5 + c - 3.3    # d is a variable of Double datatype
 
-f = d * 2
-print f
+a = 10      # a is an Integer
+b = 2.5 + a  # b is a Double
+c = a * b       # c is a Double
+
+b = "Hello"
+helloWorld = b + " " + "World"
+
+#printing time
+b = "bipin"+ "regmi"
+print b #B is printed
+w = "Welcome!"
+print w, b
+
+a = -1 + -3
+b = 1.5 * -2 + 8
+print "a=",a,"b=",b,"and the sum is",a+b #This prints a+b
+
+a = 10 < 15
+b = "b" == "c"
+c = "b" < "z"
+d = 20.12 < 20.2
+e = 20.12 + 2 + 3 /1.2
+f = 3 + (20.12 *  3)
+print (-5)
+b= 1.25 % 0.25
+#Done.......
+
+
+#Thank you...
+
+a = 1 // 2
+b = 2.0 // 3
+c = 1 > 2
+d = 2 < 1
+e = 2 >= 3
+f = 8 <= 10
+g = 0 == 1
+h = 1 != 1
+i = 2 + 1
+j = 3 - 4
+k = 4 * 12
+l = (-10 * 8 + 4)
+m = 10 / 5
+n = 10 / 6
+o = 12 == 12 == 12
+p = 12 == 12 == 1
+for (q = 0
+	; q < 1;
+	q = q + 1
+	){
+	for (r = 1
+	; r < 1;
+	r = r + 1
+	){
+	q = q - 1
+	}
+	print "this is not right"
+	print q
+	q = q + 2
+}

@@ -40,17 +40,18 @@ int main(int argc, char *argv[]) {
     }
     // Creates this symtab object
     SymTab symTab;
+    std::cout << "\nABOUT TO PRINT\n";
+    statements->print();
     std::cout << "ABOUT TO EVALUATE\n";
 	statements->evaluate(symTab);
 	// prints out the statements 
-    std::cout << "\nABOUT TO PRINT\n";
-    statements->print();
+
     // uses the symTab to evaluate the statements
     //statements->evaluate(symTab); BEFORE, THE EVALUATE STATEMENT WAS SECOND, I MADE IT FIRST
     // Something like pushing the tokens into the symboltable and the uses this to print the out
     std::cout << std::endl << "Symbol table contains the following variables.\n";
     symTab.print();
     std::cout << "Number of lines: " << tokenizer.getnumoflines() << std::endl;
-
+    delete statements;
     return 0;
 }

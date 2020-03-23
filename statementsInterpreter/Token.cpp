@@ -5,7 +5,7 @@
 #include <iostream>
 #include "Token.hpp"
 
-Token::Token(): _name{""}, _eof{false}, _eol{false}, _symbol{'\0'}, _isWholeNumber{false}, _relationalSymbol{"\0"}, _keyword{"\0"}, _string{"\0"}, _double{false} {}
+Token::Token(): _isDouble{false}, _name{""}, _eof{false}, _eol{false}, _symbol{'\0'}, _isWholeNumber{false}, _relationalSymbol{"\0"}, _keyword{"\0"}, _string{"\0"}, _double{false}, _isIntDivisionOp{false}, _wholeNumber{false} {}
 
 void Token::print() const {
     if( eol() ) std::cout << "EOL\n" ;
@@ -18,6 +18,7 @@ void Token::print() const {
     else if( isAdditionOperator() )  std::cout << " + " ;
     else if( isSubtractionOperator() )  std::cout << " - " ;
     else if( isModuloOperator() )  std::cout << " % " ;
+    else if( isDivisionOperator() && isIntDivision()) std::cout << " // ";
     else if( isDivisionOperator() )  std::cout << " / " ;
     else if( isName() )  std::cout << getName();
     else if( isLessThan() ) std::cout << " < " ;
@@ -33,5 +34,8 @@ void Token::print() const {
 	else if( isPrint() ) std::cout << " print ";
 	else if( isFor() ) std::cout << " for ";
 	else if( isString() ) std::cout << getString();
+	else if( isHash() ) std::cout << " # ";
+	else if( isDouble() ) std::cout << getDouble();
+	else if( isComma() ) std::cout << " , ";
     else std::cout << "Uninitialized token.\n";
 }
