@@ -5,6 +5,7 @@ public:
 	enum types {BOOL, DOUBLE, STRING, INTEGER};
 	TypeDescriptor(types type): _type{type} {}
 	types &type() { return _type; }
+	virtual void print() = 0;
 	virtual ~TypeDescriptor() {}
 	
 private:
@@ -17,6 +18,7 @@ public:
     IntegerTypeDescriptor(int value);
     std::string name();  // returns the name of the integer variable.
     int intValue();      // returns its value.
+	virtual void print();
     virtual ~IntegerTypeDescriptor();
 
 private:
@@ -30,6 +32,7 @@ public:
 	DoubleTypeDescriptor(double value);
 	std::string name();
 	double doubleValue();
+	virtual void print();
 	virtual ~DoubleTypeDescriptor();
 
 private:
@@ -43,6 +46,7 @@ public:
 	StringTypeDescriptor(std::string value);
 	std::string name();
 	std::string stringValue();
+	virtual void print();
 	virtual ~StringTypeDescriptor();
 
 private:

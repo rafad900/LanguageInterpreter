@@ -2,6 +2,7 @@
 #include <cmath>
 #include <iostream> 
 
+// Integer Type Descriptor
 IntegerTypeDescriptor::IntegerTypeDescriptor(std::string variableName, int value)
 :TypeDescriptor (TypeDescriptor::INTEGER) 
 {
@@ -24,8 +25,13 @@ std::string IntegerTypeDescriptor::name() {
 	return _name;
 }
 
+void IntegerTypeDescriptor::print() {
+	std::cout << _value;
+}
+
 IntegerTypeDescriptor::~IntegerTypeDescriptor() {}
 
+// Double Type Descriptor
 DoubleTypeDescriptor::DoubleTypeDescriptor(std::string variableName, double value) 
 :TypeDescriptor(TypeDescriptor::DOUBLE)
 {
@@ -48,9 +54,13 @@ std::string DoubleTypeDescriptor::name() {
 	return _name;
 }
 
+void DoubleTypeDescriptor::print() {
+	std::cout << _value;
+}
 
 DoubleTypeDescriptor::~DoubleTypeDescriptor() {}
 
+// String Type Descriptor
 StringTypeDescriptor::StringTypeDescriptor(std::string variableName, std::string value) 
 :TypeDescriptor(TypeDescriptor::STRING)
 {
@@ -75,6 +85,10 @@ std::string StringTypeDescriptor::name() {
 
 
 StringTypeDescriptor::~StringTypeDescriptor() {}
+
+void StringTypeDescriptor::print() {
+	std::cout << _value;
+}
 
 /* 
  *

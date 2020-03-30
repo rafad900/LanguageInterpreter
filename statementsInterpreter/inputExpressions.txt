@@ -83,3 +83,7 @@ for (q = 0
 	print q
 	q = q + 2
 }
+
+q = "omg" + "There is something here !@#$%^&*())"
+#r = ";laksf" - "there"
+s = "Repeat !" * 4

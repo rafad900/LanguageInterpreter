@@ -1,7 +1,5 @@
 #include <iostream>
-#include<vector>
-
-
+#include <vector>
 #include "Token.hpp"
 #include "Tokenizer.hpp"
 #include "Parser.hpp"
@@ -44,11 +42,8 @@ int main(int argc, char *argv[]) {
     statements->print();
     std::cout << "ABOUT TO EVALUATE\n";
 	statements->evaluate(symTab);
-	// prints out the statements 
 
     // uses the symTab to evaluate the statements
-    //statements->evaluate(symTab); BEFORE, THE EVALUATE STATEMENT WAS SECOND, I MADE IT FIRST
-    // Something like pushing the tokens into the symboltable and the uses this to print the out
     std::cout << std::endl << "Symbol table contains the following variables.\n";
     symTab.print();
     std::cout << "Number of lines: " << tokenizer.getnumoflines() << std::endl;

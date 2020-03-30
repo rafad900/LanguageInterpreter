@@ -24,71 +24,35 @@ TypeDescriptor* InfixExprNode::evaluate(SymTab &symTab) {
     TypeDescriptor* lValue = left()->evaluate(symTab);
     TypeDescriptor* rValue = right()->evaluate(symTab);
     TypeDescriptor* res;
-    /*if (token().symbol() == '\0') 
-    	std::cout << "InfixExprNode::evaluate: " << lValue << " " << token().relationalSymbol() << " " << rValue << std::endl;
-    else std::cout << "InfixExprNode::evaluate: " << lValue << " " << token().symbol() << " " << rValue << std::endl;*/
+    if (token().symbol() == '\0') {
+    	std::cout << "InfixExprNode::evaluate: "; lValue->print(); std::cout << " " << token().relationalSymbol() << " "; rValue->print(); std::cout << std::endl; }
+    else { std::cout << "InfixExprNode::evaluate: "; lValue->print(); std::cout << " " << token().symbol() << " "; rValue->print(); std::cout << std::endl; }
     if( token().isAdditionOperator() ) {
     	res = perform_operation(lValue, rValue, 1);
-    	//delete lValue;
-    	//delete rValue;
-		//return res;
     } else if(token().isSubtractionOperator()) {
 		res = perform_operation(lValue, rValue, 2);
-    	//delete lValue;
-    	//delete rValue;
-		//return res;
     } else if(token().isMultiplicationOperator()) {
 		res = perform_operation(lValue, rValue, 3);
-    	//delete lValue;
-    	//delete rValue;
-		//return res;
     } else if(token().isDivisionOperator()) {
     	if (token().isIntDivision()) {
 			res = perform_operation(lValue, rValue, 12);
-    		//delete lValue;
-    		//delete rValue;
-			//return res;
     	} else {
 			res = perform_operation(lValue, rValue, 4);
-    		//delete lValue;
-    		//delete rValue;
-			//return res;
 		}
     } else if( token().isModuloOperator() ) {
 		res = perform_operation(lValue, rValue, 11);
-    	//delete lValue;
-    	//delete rValue;
-		//return res;
     } else if( token().isGreaterThan()) {
 		res = perform_operation(lValue, rValue, 6);
-    	//delete lValue;
-    	//delete rValue;
-		//return res;
     } else if( token().isLessThan()) {
 		res = perform_operation(lValue, rValue, 5);
-    	//delete lValue;
-    	//delete rValue;
-		//return res;
     } else if( token().isGreaterOrEqual()) {
     	res = perform_operation(lValue, rValue, 9);
-    	//delete lValue
-    	//delete rValue;
-		//return res;
     } else if( token().isLessOrEqual()) {
     	res = perform_operation(lValue, rValue, 8);
-    	//delete lValue;
-    	//delete rValue;
-		//return res;
     } else if( token().isEqualTo()) {
     	res = perform_operation(lValue, rValue, 7);
-    	//delete lValue;
-    	//delete rValue;
-		//return res;
     } else if( token().isNotEqualTo()) {
       	res = perform_operation(lValue, rValue, 10);
-    	//delete lValue;
-    	//delete rValue;
-		//return res;
     } else {
         std::cout << "InfixExprNode::evaluate: don't know how to evaluate this operator\n";
         token().print();
