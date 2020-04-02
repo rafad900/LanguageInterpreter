@@ -48,5 +48,6 @@ int main(int argc, char *argv[]) {
     symTab.print();
     std::cout << "Number of lines: " << tokenizer.getnumoflines() << std::endl;
     delete statements;
+    tokenizer.printProcessedTokens();
     return 0;
 }

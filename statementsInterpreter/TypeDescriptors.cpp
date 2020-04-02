@@ -13,7 +13,7 @@ IntegerTypeDescriptor::IntegerTypeDescriptor(std::string variableName, int value
 IntegerTypeDescriptor::IntegerTypeDescriptor(int value)
 :TypeDescriptor (TypeDescriptor::INTEGER)
 {
-	_name = false;
+	_name = "\0";
 	_value = value;
 }
 
@@ -42,7 +42,7 @@ DoubleTypeDescriptor::DoubleTypeDescriptor(std::string variableName, double valu
 DoubleTypeDescriptor::DoubleTypeDescriptor(double value) 
 :TypeDescriptor(TypeDescriptor::DOUBLE)
 {
-	_name = false; 
+	_name = "\0"; 
 	_value = value;
 }
 
@@ -263,7 +263,7 @@ int double_comparison_double(int l, int r,  int opcode) {
 
 int integer_comparison_double(int l, double r,  int opcode, int reverse) {
 	// When the integer comes first keep the original operand, when the double comes first, use the opposite operand
-	bool res;
+	bool res = false;
 	if (opcode == 5) res = reverse ? l < r : l > r;
 	else if (opcode == 6) 	res = reverse ? l > r : l < r;
 	else if (opcode == 7)		res = l == r; 

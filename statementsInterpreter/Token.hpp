@@ -11,32 +11,44 @@ class Token {
 public:
     Token();
 
-    bool &eof()  { return _eof; }
-    bool &eol()  { return _eol; }
+    bool& eof() { return _eof; }
+    bool& eol() { return _eol; }
 
     bool eof() const { return _eof; }
-    bool eol() const  { return _eol; }
+    bool eol() const { return _eol; }
 
-    bool isOpenParen() const  { return _symbol == '('; }
+    bool isOpenParen() const { return _symbol == '('; }
     bool isCloseParen() const { return _symbol == ')'; }
 
     void symbol(char c) { _symbol = c; }
     char symbol() { return _symbol; }
     void relationalSymbol(std::string s) { _relationalSymbol = s; }
     std::string relationalSymbol() { return _relationalSymbol; }
- 	void keywordSymbol(std::string s) { _keyword = s; }
- 	std::string keywordSymbol() const { return _keyword; }
-	
-	bool isHash() const { return _symbol == '#'; }
-	bool isPeriod() const { return _symbol == '.'; }
-	bool isComma() const { return _symbol == ','; }
-	bool isSingleQuotes() const { return _symbol == '\''; }
-	bool isDoubleQuotes() const { return _symbol == '\"'; }
-	bool isOpenBrac() const { return _symbol == '{'; }
-	bool isCloseBrac() const { return _symbol == '}'; }
-    bool isKeyword() const { return _name == "print" || _name == "for"; }
+    void keywordSymbol(std::string s) { _keyword = s; }
+    std::string keywordSymbol() const { return _keyword; }
+
+    void setIndent() { indent = true; }
+    void setDedent() { dedent = true; }
+    bool isIndent() const { return indent; }
+    bool isDedent() const { return dedent; }
+
+    bool isHash() const { return _symbol == '#'; }
+    bool isPeriod() const { return _symbol == '.'; }
+    bool isComma() const { return _symbol == ','; }
+    bool isSingleQuotes() const { return _symbol == '\''; }
+    bool isDoubleQuotes() const { return _symbol == '\"'; }
+    bool isOpenBrac() const { return _symbol == '{'; }
+    bool isCloseBrac() const { return _symbol == '}'; }
+    bool isKeyword() const { return _name == "print" || _name == "for" || _name == "in" || _name == "range" || 
+                                    _name == "and" || _name == "or" || _name == "not" || _name == "if"; }
+    bool isAnd() const { return _name == "and"; }
+    bool isOr() const { return _name == "or"; }
+    bool isNot() const { return _name == "not"; }
+    bool isIn() const { return _name == "in"; }
+    bool isRange() const { return _name == "range"; }
     bool isPrint() const { return _name == "print"; }
     bool isFor() const { return _name == "for"; }
+    bool isIf() const { return _name == "if"; }
 	bool isLessThan() const 	{ return _symbol == '<'; }
 	bool isGreaterThan() const 	{ return _symbol == '>'; }
 	bool isEqualTo() const 		{ return _relationalSymbol == "=="; }
@@ -52,6 +64,7 @@ public:
 				isGreaterOrEqual();
 	}
     bool isSemiColon() const 	{ return _symbol == ';'; }
+    bool isColon() const { return _symbol == ':'; }
     bool isAssignmentOperator() const              { return _symbol == '='; }
     bool isMultiplicationOperator() const { return _symbol == '*'; }
     bool isAdditionOperator() const       { return _symbol == '+'; }
@@ -94,6 +107,8 @@ public:
     void print() const;
 
 private:
+    bool indent;
+    bool dedent;
 	double _double;
 	bool _isDouble;
     std::string _name;

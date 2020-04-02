@@ -25,9 +25,13 @@ private:
     std::ifstream &inStream;
     std::vector<Token> _tokens; 
     int numoflines = 0;
+    std::vector<int> stack;
+    bool parsingANewLine;
+    int spaces;
     
 
 private:
+    Token indentOrDedent();
 	std::string readString( char p );
     std::string readName();
     std::string readNumber();

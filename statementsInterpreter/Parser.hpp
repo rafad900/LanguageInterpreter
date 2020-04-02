@@ -18,11 +18,12 @@ public:
     Parser(Tokenizer &tokenizer) : tokenizer{tokenizer} {}
 
     Statements *statements();
+    Statements *suite();
 
     AssignmentStatement *assignStatement();
     PrintStatement *printStatement();
     ForStatement *forStatement();
-
+    IfStatement* ifStatement();
 
     ExprNode *expr();
     ExprNode *term();
@@ -31,8 +32,11 @@ public:
 	ExprNode *relTerm();
 	ExprNode *relPrimary();
 	ExprNode *factor();
-
-    std::string id();
+    ExprNode *test();
+    ExprNode *testlist();
+    ExprNode* or_test();
+    ExprNode* and_test();
+    ExprNode* not_test();
 
 private:
     Tokenizer &tokenizer;

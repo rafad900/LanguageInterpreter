@@ -1,3 +1,4 @@
-a = "b"
+for a in range(3) :
+    print 2
 
 

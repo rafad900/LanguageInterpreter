@@ -5,6 +5,7 @@
 #include "Statements.hpp"
 #include <stdio.h>
 #include <string>
+#include "Range.hpp"
 // Statement
 Statement::Statement() {}
 
@@ -99,39 +100,71 @@ void PrintStatement::print() {
 	}
 }
 
-ForStatement::ForStatement() : _start{nullptr}, _incdec{nullptr}, _condition{nullptr}, _stms{nullptr} {}
+ForStatement::ForStatement() : _testlist{ NULL }, _stms{ nullptr }, _id{ "\0" } {}
 
-ForStatement::ForStatement(AssignmentStatement *start, AssignmentStatement *incdec, ExprNode * condition, Statements *forStms):
- _start{start}, _incdec{incdec}, _condition{condition}, _stms{forStms} {}
-
-AssignmentStatement *&ForStatement::start() {
-	return _start;
-}
-
-AssignmentStatement *&ForStatement::incdec() {
-	return _incdec;
-}
-
-ExprNode *&ForStatement::condition() {
-	return _condition;
+ForStatement::ForStatement(std::string id, std::vector<ExprNode*> testlist, Statements *forStms):
+	_testlist{ testlist }, _stms{ forStms }, _id{ id } 
+{
+	if (_testlist.size() > 3 || _testlist.size() < 1) {
+		std::cout << "Only 3 parameters can be used in range(). Instead " << _testlist.size() << " were passed.\n";
+		exit(1);
+	}
 }
 
 Statements *&ForStatement::stms() {
 	return _stms;
 }
+void ForStatement::evaluate(SymTab& symTab) {
+	Range* rg;
 
-void ForStatement::evaluate(SymTab &symTab) {
-	_start->evaluate(symTab);
-	while ( dynamic_cast<IntegerTypeDescriptor *>(_condition->evaluate(symTab))->intValue() ) {
- 
+	for (int i = 0; i < _testlist.size(); i++) {
+		TypeDescriptor* parent = _testlist[i]->evaluate(symTab);
+		if (parent->type() != TypeDescriptor::INTEGER) {
+			std::cout << "parameters for range have to be integers\n";
+			exit(1);
+		}
+		else {
+			parameters.push_back(dynamic_cast<IntegerTypeDescriptor*>(parent)->intValue());
+		}
+	}
+
+	if (parameters.size() == 1)
+		rg = new Range(parameters[0]);
+	else if (parameters.size() == 2)
+		rg = new Range(parameters[0], parameters[1]);
+	else
+		rg = new Range(parameters[0], parameters[1], parameters[2]);
+	
+	while (rg->condition()) {
+		symTab.setValueFor(_id, new IntegerTypeDescriptor(rg->current()));
 		_stms->evaluate(symTab);
-		_incdec->evaluate(symTab);
+		rg->next();
 	}
 }
 
 void ForStatement::print() {
-	std::cout << "for (";  _start->print(); std::cout << ";";  _condition->print(); std::cout << ";";  _incdec->print(); std::cout << ") {\n";
+
+	std::cout << "for " << _id << " in range(";	
+	for (int i = 0; i < _testlist.size() - 1; i++) {
+		_testlist[i]->print();
+		std::cout << ", ";
+	}
+	_testlist[_testlist.size() - 1]->print();
+	std::cout << ") { \n";
 	_stms->print();
 	std::cout << "}\n";
 }
 
+IfStatement::IfStatement() : testSuites{ NULL } {}
+
+void IfStatement::evaluate(SymTab &symTab) {
+	int a;
+}
+
+void IfStatement::print() {
+	std::cout << "This is for if statement\n";
+}
+
+void IfStatement::insertSuite(ExprNode* test, Statements* stms) {
+	testSuites.push_back(std::make_pair(test, stms));
+}

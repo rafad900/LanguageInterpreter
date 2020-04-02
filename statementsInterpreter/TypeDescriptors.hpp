@@ -1,8 +1,11 @@
+#ifndef TYPEDESCRIPTOR_HPP
+#define TYPEDESCRIPTOR_HPP
+
 #include <string> 
 
 class TypeDescriptor {
 public:
-	enum types {BOOL, DOUBLE, STRING, INTEGER};
+	enum  types {BOOL, DOUBLE, STRING, INTEGER};
 	TypeDescriptor(types type): _type{type} {}
 	types &type() { return _type; }
 	virtual void print() = 0;
@@ -71,3 +74,4 @@ private:
 };
 */ 
 
+#endif

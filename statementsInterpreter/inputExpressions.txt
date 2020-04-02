@@ -1,15 +1,9 @@
-for (i = 0
-; i < 3;
- i = i+1
-){
-    for (j = 0
-    ; j < 3;
-     j = j+1
-    ){
-    print
-    print i
-    print j
-    print
+for i in range(5) {
+    for a in range(10) {
+		print
+		print i
+		print j
+		print
     }
 }
 
@@ -69,15 +63,9 @@ m = 10 / 5
 n = 10 / 6
 o = 12 == 12 == 12
 p = 12 == 12 == 1
-for (q = 0
-	; q < 1;
-	q = q + 1
-	){
-	for (r = 1
-	; r < 1;
-	r = r + 1
-	){
-	q = q - 1
+for ab in range(10) {
+	for c in range(7) {
+		q = q - 1
 	}
 	print "this is not right"
 	print q

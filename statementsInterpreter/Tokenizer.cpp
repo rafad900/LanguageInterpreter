@@ -4,7 +4,29 @@
 
 #include <iostream>
 #include <string>
+#include <algorithm>
 #include "Tokenizer.hpp"
+
+Token Tokenizer::indentOrDedent() {
+    Token token;
+    parsingANewLine = false;
+    if (stack[stack.size() - 1] < spaces) {
+        token.setIndent();
+        std::cout << "This is the indent spaces: " << spaces << std::endl;
+        stack.push_back(spaces);
+    }
+    else if (stack.size() > 1 && stack[stack.size() - 1] > spaces) {
+        if (std::find(stack.begin(), stack.end(), spaces) != stack.end())
+            stack.pop_back();
+        else {
+            std::cout << "There was an error in indentation\nHere are the tokens read up this point";
+            printProcessedTokens();
+            exit(1);
+        }
+        token.setDedent();
+    }
+    return token;
+}
 
 void Tokenizer::readComment() {
 	char c;
@@ -14,9 +36,6 @@ void Tokenizer::readComment() {
 }
 
 std::string Tokenizer::readString( char p ) {
-	// This function is called when the character read 
-	// is an open quote character signifying the beginning
-	// of a string
 	std::string _string;
 	char c;
 	while( inStream.get(c) && (isalnum(c) || isspace(c) || ispunct(c) || c == '\'' || c == '\"') ) {
@@ -38,16 +57,12 @@ std::string Tokenizer::readString( char p ) {
 
 
 std::string Tokenizer::readName() {
-    // This function is called when it is known that
-    // the first character in input is an alphabetic character.
-    // The function reads and returns all characters of the name.
-
     std::string name;
     char c;
     while( inStream.get(c) && isalnum(c) ) {
         name += c;
     }
-    if(inStream.good())  // In the loop, we have read one char too many.
+    if(inStream.good())  
         inStream.putback(c);
     return name;
 }
@@ -60,21 +75,19 @@ bool isDouble(std::string s) {
 }
 
 std::string Tokenizer::readNumber() {
-    // This function is called when it is known that
-    // the first character in input is a digit.
-    // The function reads and returns all remaining digits.
+
 	std::string pre;
     char c;
     while( inStream.get(c) && (isdigit(c) || c == '.')) {
     	pre += c;
     }
-    if(inStream.good())  // In the loop, we have read one char too many.
+    if(inStream.good())  
         inStream.putback(c);
     return pre;
 }
 
 // Here is the constructor
-Tokenizer::Tokenizer(std::ifstream &stream): ungottenToken{false}, inStream{stream}, lastToken{} {}
+Tokenizer::Tokenizer(std::ifstream& stream) : ungottenToken{ false }, inStream{ stream }, lastToken{}, stack{ 0 }, parsingANewLine{ true }, spaces{ 0 } {}
 
 Token Tokenizer::getToken() {
     if(ungottenToken) {
@@ -84,46 +97,59 @@ Token Tokenizer::getToken() {
 
     char c;
     char t;
-    while( inStream.get(c) && isspace(c) && c != '\n' )  // Skip spaces but not new-line chars.
-        ;
+    while (inStream.get(c) && isspace(c) && c != '\n') 
+        spaces++;
 
     if(inStream.bad()) {
         std::cout << "Error while reading the input stream in Tokenizer.\n";
         exit(1);
     }
-	
+
     Token token;
-    if( inStream.eof()) {
+    if (inStream.eof()) {
         token.eof() = true;
-    } else if( c == '\n' ) {  // will not ever be the case unless new-line characters are not supressed.
-    	numoflines++;
-        token.eol() = true;
-    } else if( isdigit(c) || c == '.') {
-        // put the digit back into the input stream so
-        // we read the entire number in a function
+    }
+    else if (c == '\n') {
+        if (lastToken.eol())
+            token = indentOrDedent();
+        parsingANewLine = true;
+        spaces = 0;
+        numoflines++;
+        if (!token.isIndent() && !token.isDedent())
+            token.eol() = true;
+    }
+    else if (isdigit(c) || c == '.') {
         inStream.putback(c);
-		std::string pre = readNumber();
-		if (isDouble(pre)) {
-			token.setDouble( std::stod(pre) );
-		} else { 
-			token.setWholeNumber( std::stoi(pre) );
-		}
-    } else if( c == '=' ) {
-    	if (inStream.peek() == '=') {
-    		inStream.get(t);
-    		token.relationalSymbol(std::string(1, c) + t);		
-        } else {
-        	token.symbol(c);
+        std::string pre = readNumber();
+        if (isDouble(pre)) {
+            token.setDouble(std::stod(pre));
         }
-    } else if( c == '+' || c == '-' || c == '*' || c == '/' || c == '%') {
-    	if ( c == '/' && inStream.peek() == '/' ) {
-    		token.symbol(c);
-    		inStream.get(c);
-    		token.setIntDivision();
-        } else {
-        	token.symbol(c);
+        else {
+            token.setWholeNumber(std::stoi(pre));
         }
-    } else if( c == ';' )
+    }
+    else if (c == '=') {
+        if (inStream.peek() == '=') {
+            inStream.get(t);
+            token.relationalSymbol(std::string(1, c) + t);
+        }
+        else {
+            token.symbol(c);
+        }
+    }
+    else if (c == '+' || c == '-' || c == '*' || c == '/' || c == '%') {
+        if (c == '/' && inStream.peek() == '/') {
+            token.symbol(c);
+            inStream.get(c);
+            token.setIntDivision();
+        }
+        else {
+            token.symbol(c);
+        }
+    }
+    else if (c == ';')
+        token.symbol(c);
+    else if (c == ':')
         token.symbol(c);
     else if( c == '(' || c == ')')
         token.symbol(c);
@@ -135,10 +161,12 @@ Token Tokenizer::getToken() {
    		token.symbol(c);
     else if ( c == '\"' || c == '\'')
     	token.setString( readString(c) );
-    else if(isalpha(c)) {  // an identifier?
-        // put c back into the stream so we can read the entire name in a function.
+    else if(isalpha(c)) {
         inStream.putback(c);
-        token.setName( readName() );
+        if (parsingANewLine)
+            token = indentOrDedent();
+        if (!token.isDedent() && !token.isIndent())
+            token.setName( readName() );
    	} else if( c == '>' || c == '<') {
    		if (inStream.peek() == '=') {
    			inStream.get(t);

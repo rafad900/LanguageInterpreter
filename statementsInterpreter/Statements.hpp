@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <vector>
+#include <utility>
 
 #include "ArithExpr.hpp"
 #include "SymTab.hpp"
@@ -83,20 +84,29 @@ class PrintStatement : public Statement {
 class ForStatement : public Statement {
 	public:
 		ForStatement();
-		ForStatement(AssignmentStatement *start, AssignmentStatement *incdec, ExprNode * condition, Statements *forStms);
-		ExprNode *&condition();
-		AssignmentStatement *&incdec();
-		AssignmentStatement *&start();
+		ForStatement(std::string id, std::vector<ExprNode*> testlist, Statements *forStms);
 		Statements *&stms();
 		
 		virtual void evaluate(SymTab &symTab);
 		virtual void print();
 
 	private:
-		AssignmentStatement *_start;
-		AssignmentStatement *_incdec;
-		ExprNode *_condition;
+		std::string _id;
+		std::vector<ExprNode*> _testlist;
+		std::vector<int> parameters;
 		Statements *_stms;
+};
+
+class IfStatement : public Statement {
+public:
+	IfStatement();
+
+	virtual void evaluate(SymTab& symTab);
+	virtual void print();
+	void insertSuite(ExprNode* test, Statements* stms);
+
+private:
+	std::vector<std::pair<ExprNode* , Statements*>> testSuites;
 };
 
 #endif //EXPRINTER_STATEMENTS_HPP
