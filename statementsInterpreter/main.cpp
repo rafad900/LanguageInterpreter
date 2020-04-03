@@ -38,16 +38,16 @@ int main(int argc, char *argv[]) {
     }
     // Creates this symtab object
     SymTab symTab;
-    std::cout << "\nABOUT TO PRINT\n";
-    statements->print();
+    //std::cout << "\nABOUT TO PRINT\n";
+    //statements->print();
     std::cout << "ABOUT TO EVALUATE\n";
 	statements->evaluate(symTab);
 
     // uses the symTab to evaluate the statements
-    std::cout << std::endl << "Symbol table contains the following variables.\n";
-    symTab.print();
-    std::cout << "Number of lines: " << tokenizer.getnumoflines() << std::endl;
+    //std::cout << std::endl << "Symbol table contains the following variables.\n";
+    //symTab.print();
+    std::cout << "\n\nNumber of lines: " << tokenizer.getnumoflines() << std::endl;
     delete statements;
-    tokenizer.printProcessedTokens();
+    //tokenizer.printProcessedTokens();
     return 0;
 }

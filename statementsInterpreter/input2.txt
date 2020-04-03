@@ -1,4 +1,8 @@
-for a in range(3) :
-    print 2
+if (2 * 2) == 3:
+	print "This should not be visible"
+elif 0:
+	print "This should not be visible"
+else: 
+	print "This should be visible"
 
 

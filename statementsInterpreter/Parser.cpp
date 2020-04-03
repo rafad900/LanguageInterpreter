@@ -37,20 +37,27 @@ Statements *Parser::statements() {
     	}
     	if (tok.isKeyword()) {
     		if (tok.isFor()) {
-				std::cout << "It has read for \n";
+				//std::cout << "It has read for \n";
 				tokenizer.ungetToken();
 				ForStatement *forStmt = forStatement();
 				stmts->addStatement(forStmt);
 				tok = tokenizer.getToken();
     		} else if (tok.isPrint()) {
-				std::cout << "IT has read print\n";
+				//std::cout << "It has read print\n";
 				tokenizer.ungetToken();
 				PrintStatement *printStmt = printStatement();
 				stmts->addStatement(printStmt);
 				tok = tokenizer.getToken();
-			}
+            }
+            else if (tok.isIf()) {
+                //std::cout << "It has read if\n";
+                tokenizer.ungetToken();
+                IfStatement* ifStmt = ifStatement();
+                stmts->addStatement(ifStmt);
+                tok = tokenizer.getToken();
+            }
     	} else {
-    		std::cout << "It has read assignement\n";
+    		//std::cout << "It has read assignement\n";
 			tokenizer.ungetToken();
 			AssignmentStatement *assignStmt = assignStatement();
 			stmts->addStatement(assignStmt);
@@ -172,12 +179,34 @@ IfStatement* Parser::ifStatement() {
     
     IfStatement* ifStatements = new IfStatement();
     ExprNode* _test = test();
+
     Token colon = tokenizer.getToken();
     if (!colon.isColon())
         die("Parser::ifStatement", "Expected a colon, instead got", colon);
+
     Statements* _stms = suite();
     ifStatements->insertSuite(_test, _stms);
 
+    Token elseOrElif = tokenizer.getToken();
+
+    while (elseOrElif.isKeyword()) {
+        if (elseOrElif.isElif()) {
+            ExprNode* next_test = test();
+            Token colon = tokenizer.getToken();
+            Statements* next_stms = suite();
+            ifStatements->insertSuite(next_test, next_stms);
+            elseOrElif = tokenizer.getToken();
+        }
+        if (elseOrElif.isElse()) {
+            Token one;
+            one.setWholeNumber(1);
+            ExprNode* next_test = new WholeNumber(one);
+            Token colon = tokenizer.getToken();
+            Statements* next_stms = suite();
+            ifStatements->insertSuite(next_test, next_stms);
+            break;
+        }
+    }
 
     return ifStatements;
 }

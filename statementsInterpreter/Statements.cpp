@@ -155,14 +155,30 @@ void ForStatement::print() {
 	std::cout << "}\n";
 }
 
-IfStatement::IfStatement() : testSuites{ NULL } {}
+IfStatement::IfStatement() : testSuites{ 0 } {}
 
 void IfStatement::evaluate(SymTab &symTab) {
-	int a;
+	for (int i = 0; i < testSuites.size(); i++) {
+		if (dynamic_cast<IntegerTypeDescriptor*>(testSuites[i].first->evaluate(symTab))->intValue()) {
+			testSuites[i].second->evaluate(symTab);
+			break;
+		}
+	}
 }
 
 void IfStatement::print() {
-	std::cout << "This is for if statement\n";
+	std::cout << "if ";
+	testSuites[0].first->print();
+	std::cout << " :\n";
+	testSuites[0].second->print();
+	std::cout << std::endl;
+	for (int i = 1; i < testSuites.size(); i++) {
+		std::cout << "elif ";
+		testSuites[i].first->print();
+		std::cout << " :\n";
+		testSuites[i].second->print();
+		std::cout << std::endl;
+	}
 }
 
 void IfStatement::insertSuite(ExprNode* test, Statements* stms) {

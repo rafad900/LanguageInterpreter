@@ -12,7 +12,7 @@ Token Tokenizer::indentOrDedent() {
     parsingANewLine = false;
     if (stack[stack.size() - 1] < spaces) {
         token.setIndent();
-        std::cout << "This is the indent spaces: " << spaces << std::endl;
+        //std::cout << "This is the indent spaces: " << spaces << std::endl;
         stack.push_back(spaces);
     }
     else if (stack.size() > 1 && stack[stack.size() - 1] > spaces) {
