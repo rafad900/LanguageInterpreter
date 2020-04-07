@@ -1,8 +1,7 @@
-if (2 * 2) == 3:
-	print "This should not be visible"
-elif 0:
-	print "This should not be visible"
-else: 
-	print "This should be visible"
+
+a = 1
+
+if not not 1 and not not 1:
+    print "this should print"
 
 

@@ -13,20 +13,34 @@ ExprNode::ExprNode(Token token): _token{token} {}
 Token ExprNode::token() { return _token; }
 
 // InfixExprNode functions
-InfixExprNode::InfixExprNode(Token tk) : ExprNode{tk}, _left(nullptr), _right(nullptr) {}
+InfixExprNode::InfixExprNode(Token tk) : ExprNode{ tk }, _left(nullptr), _right(nullptr), result{ nullptr } {}
 
 ExprNode *&InfixExprNode::left() { return _left; }
 
 ExprNode *&InfixExprNode::right() { return _right; }
 
 TypeDescriptor* InfixExprNode::evaluate(SymTab &symTab) {
-    // Evaluates an infix expression using a post-order traversal of the expression tree.
-    TypeDescriptor* lValue = left()->evaluate(symTab);
+    TypeDescriptor* lValue = new IntDescriptor(3);
+    if (left() != nullptr)
+        lValue = left()->evaluate(symTab);
     TypeDescriptor* rValue = right()->evaluate(symTab);
     TypeDescriptor* res;
     if (token().symbol() == '\0') {
-    	std::cout << "InfixExprNode::evaluate: "; lValue->print(); std::cout << " " << token().relationalSymbol() << " "; rValue->print(); std::cout << std::endl; }
-    else { std::cout << "InfixExprNode::evaluate: "; lValue->print(); std::cout << " " << token().symbol() << " "; rValue->print(); std::cout << std::endl; }
+        if (left() != nullptr) {
+            std::cout << "InfixExprNode::evaluate: "; lValue->print(); std::cout << " " << token().relationalSymbol() << " "; rValue->print(); std::cout << std::endl;
+        }
+        else {
+            std::cout << "InfixExprNode::evaluate: "; std::cout << token().relationalSymbol() << " "; rValue->print(); std::cout << std::endl;
+        }
+    }
+    else {
+        if (left() != nullptr) {
+            std::cout << "InfixExprNode::evaluate: "; lValue->print(); std::cout << " " << token().symbol() << " "; rValue->print(); std::cout << std::endl;
+        }
+        else {
+            std::cout << "InfixExprNode::evaluate: "; std::cout << token().relationalSymbol() << " "; rValue->print(); std::cout << std::endl;
+        }
+    }
     if( token().isAdditionOperator() ) {
     	res = perform_operation(lValue, rValue, 1);
     } else if(token().isSubtractionOperator()) {
@@ -53,6 +67,12 @@ TypeDescriptor* InfixExprNode::evaluate(SymTab &symTab) {
     	res = perform_operation(lValue, rValue, 7);
     } else if( token().isNotEqualTo()) {
       	res = perform_operation(lValue, rValue, 10);
+    } else if (token().isAnd()) {
+        res = perform_operation(lValue, rValue, 13);
+    } else if (token().isOr()) {
+        res = perform_operation(lValue, rValue, 14);
+    } else if (token().isNot()) {
+        res = perform_operation(lValue, rValue, 15);
     } else {
         std::cout << "InfixExprNode::evaluate: don't know how to evaluate this operator\n";
         token().print();
@@ -82,7 +102,7 @@ void WholeNumber::print() {
 
 TypeDescriptor* WholeNumber::evaluate(SymTab &symTab) {
     //std::cout << "WholeNumber::evaluate: returning " << token().getWholeNumber() << std::endl;
-    TypeDescriptor *value = new IntegerTypeDescriptor(token().getWholeNumber());
+    TypeDescriptor *value = new IntDescriptor(token().getWholeNumber());
     return value;
 }
 
@@ -96,10 +116,10 @@ void Variable::print() {
 
 TypeDescriptor* Variable::evaluate(SymTab &symTab) {
     if( ! symTab.isDefined(token().getName())) {
-     //   std::cout << "Variable::evaluate: Use of undefined variable, " << token().getName() << std::endl;
+        std::cout << "ERROR: Variable::evaluate: Use of undefined variable, " << token().getName() << std::endl;
         exit(1);
     }
-    //std::cout << "Variable::evaluate: returning " << symTab.getValueFor(token().getName()) << std::endl;
+    //std::cout << "Variable::evaluate: returning " << std::endl;
     TypeDescriptor *value = symTab.getValueFor(token().getName());
     return value;
 }
@@ -116,7 +136,7 @@ void UserString::print() {
 
 TypeDescriptor* UserString::evaluate(SymTab &symTab) {
     //std::cout << "UserString::evaluate: returning " << token().getString() << std::endl;
-    TypeDescriptor *value = new StringTypeDescriptor(token().getString());
+    TypeDescriptor *value = new StrDescriptor(token().getString());
     return value;
 }
 
@@ -130,6 +150,6 @@ void DoubleNumber::print() {
 
 TypeDescriptor* DoubleNumber::evaluate(SymTab &symTab) {
     //std::cout << "Double::evaluate: returning " << token().getDouble() << std::endl;
-    TypeDescriptor *value = new DoubleTypeDescriptor(token().getDouble());
+    TypeDescriptor *value = new DblDescriptor(token().getDouble());
     return value;
 }

@@ -56,6 +56,10 @@ Statements *Parser::statements() {
                 stmts->addStatement(ifStmt);
                 tok = tokenizer.getToken();
             }
+            else {
+                tokenizer.ungetToken();
+                break;
+            }
     	} else {
     		//std::cout << "It has read assignement\n";
 			tokenizer.ungetToken();
@@ -75,15 +79,15 @@ PrintStatement *Parser::printStatement() {
 		die("Parser::printStatement", "Expected a keyword token, instead got", keyword); 
 	
 	std::vector<ExprNode *> testlist;
-	Token test = tokenizer.getToken();
-	while (test.isString() || test.isWholeNumber() || test.isName() || test.isComma() || test.isOpenParen() ) {
-		if (test.isComma()) {
-			test = tokenizer.getToken();
+	Token test_token = tokenizer.getToken();
+	while (test_token.isString() || test_token.isWholeNumber() || test_token.isName() || test_token.isComma() || test_token.isOpenParen() ) {
+		if (test_token.isComma()) {
+			test_token = tokenizer.getToken();
 			continue;
 		}
 		tokenizer.ungetToken();
-		testlist.push_back( relExpr() );	// MAKE ALL THE NEW EXPRESSION NODES AND SAVE THEM INTO THE VECTOR 
-		test = tokenizer.getToken();
+		testlist.push_back( test() );	// MAKE ALL THE NEW EXPRESSION NODES AND SAVE THEM INTO THE VECTOR 
+		test_token = tokenizer.getToken();
 	}
 
 	tokenizer.ungetToken();
@@ -106,7 +110,7 @@ AssignmentStatement *Parser::assignStatement() {
         die("Parser::assignStatement", "Expected an equal sign, instead got", assignOp);
 	
 	// This begins a sort of recursive call down the grammar rules 
-    ExprNode *rightHandSideExpr = relExpr();
+    ExprNode *rightHandSideExpr = test();
     // I removed the check for the semicolon and call the die function 
     Token tok = tokenizer.getToken();
     if (!tok.eol()) 
@@ -138,15 +142,15 @@ ForStatement *Parser::forStatement() {
 
 
     std::vector<ExprNode*> testlist;
-    Token test = tokenizer.getToken();
-    while (test.isString() || test.isName() || test.isComma() || test.isOpenParen() || test.isWholeNumber()) {
-        if (test.isComma()) {
-            test = tokenizer.getToken();
+    Token test_token = tokenizer.getToken();
+    while (test_token.isString() || test_token.isName() || test_token.isComma() || test_token.isOpenParen() || test_token.isWholeNumber()) {
+        if (test_token.isComma()) {
+            test_token = tokenizer.getToken();
             continue;
         }
         tokenizer.ungetToken();
-        testlist.push_back(relExpr());	// MAKE ALL THE NEW EXPRESSION NODES AND SAVE THEM INTO THE VECTOR 
-        test = tokenizer.getToken();
+        testlist.push_back(test());	// MAKE ALL THE NEW EXPRESSION NODES AND SAVE THEM INTO THE VECTOR 
+        test_token = tokenizer.getToken();
     }
 
     tokenizer.ungetToken();
@@ -188,8 +192,11 @@ IfStatement* Parser::ifStatement() {
     ifStatements->insertSuite(_test, _stms);
 
     Token elseOrElif = tokenizer.getToken();
+    if (elseOrElif.eol())
+        while (elseOrElif.eol())
+            elseOrElif = tokenizer.getToken();
 
-    while (elseOrElif.isKeyword()) {
+    while (elseOrElif.isKeyword() || elseOrElif.eol()) {
         if (elseOrElif.isElif()) {
             ExprNode* next_test = test();
             Token colon = tokenizer.getToken();
@@ -197,7 +204,7 @@ IfStatement* Parser::ifStatement() {
             ifStatements->insertSuite(next_test, next_stms);
             elseOrElif = tokenizer.getToken();
         }
-        if (elseOrElif.isElse()) {
+        else if (elseOrElif.isElse()) {
             Token one;
             one.setWholeNumber(1);
             ExprNode* next_test = new WholeNumber(one);
@@ -206,19 +213,19 @@ IfStatement* Parser::ifStatement() {
             ifStatements->insertSuite(next_test, next_stms);
             break;
         }
+        else if (elseOrElif.eol()) {
+            elseOrElif = tokenizer.getToken();
+        }
+        else {
+            tokenizer.ungetToken();
+            break;
+        }
     }
 
     return ifStatements;
 }
 
 ExprNode *Parser::expr() {
-    // This function parses the grammar rules:
-
-    // <expr> -> <term> { <add_op> <term> }
-    // <add_op> -> + | -
-
-    // However, it makes the <add_op> left associative.
-	
     ExprNode *left = term();
     Token tok = tokenizer.getToken();
     while (tok.isAdditionOperator() || tok.isSubtractionOperator()) {
@@ -233,15 +240,12 @@ ExprNode *Parser::expr() {
 }
 
 ExprNode *Parser::relExpr() {
-	// Uses the grammar rule relexpr -> relterm {!=, == relterm}
-    //ExprNode *left = relTerm();
-    ExprNode *left = relPrimary();
+    ExprNode *left = expr();
     Token tok = tokenizer.getToken();
     while (tok.isEqualTo() || tok.isNotEqualTo() || tok.isLessThan() || tok.isGreaterThan() || tok.isLessOrEqual() || tok.isGreaterOrEqual() ) {
         InfixExprNode *p = new InfixExprNode(tok);
         p->left() = left;
-        //p->right() = relTerm();
-        p->right() = relPrimary();
+        p->right() = expr();
         left = p;
         tok = tokenizer.getToken();
     }
@@ -270,15 +274,9 @@ ExprNode *Parser::factor() {
 
 
 ExprNode *Parser::term() {
-    // This function parses the grammar rules:
 
-    // <term> -> <primary> { <mult_op> <primary> }
-    // <mult_op> -> * | / | %
-
-    // However, the implementation makes the <mult-op> left associate.
     ExprNode *left = factor();
     Token tok = tokenizer.getToken();
-	// If there no more terms to look for, and only a semicolon, the while look will not return 
     while (tok.isMultiplicationOperator() || tok.isDivisionOperator() || tok.isModuloOperator()) {
         InfixExprNode *p = new InfixExprNode(tok);
         p->left() = left;
@@ -290,26 +288,7 @@ ExprNode *Parser::term() {
     return left;
 }
 
-ExprNode *Parser::relTerm() {
-    ExprNode *left = relPrimary();
-    Token tok = tokenizer.getToken();
-    while (tok.isLessThan() || tok.isGreaterThan() || tok.isLessOrEqual() || tok.isGreaterOrEqual()) {
-        InfixExprNode *p = new InfixExprNode(tok);
-        p->left() = left;
-        p->right() = relPrimary();
-        left = p;
-        tok = tokenizer.getToken();
-    }
-    tokenizer.ungetToken();
-    return left;
-}
-
 ExprNode *Parser::primary() {
-    // This function parses the grammar rules:
-
-    // <primary> -> [0-9]+
-    // <primary> -> [_a-zA-Z]+
-    // <primary> -> (<expr>)
 
     Token tok = tokenizer.getToken();
 
@@ -332,11 +311,6 @@ ExprNode *Parser::primary() {
     return nullptr;  // Will not reach this statement!
 }
 
-ExprNode *Parser::relPrimary() {
-	ExprNode *singleArith = expr();
-	return singleArith;
-}
-
 Statements* Parser::suite() {
 
     Token eol = tokenizer.getToken();
@@ -357,15 +331,20 @@ Statements* Parser::suite() {
 }
 
 
-
 ExprNode* Parser::test() {
-    
     ExprNode* left = or_test();
+    return left;
+}
+
+ExprNode* Parser::or_test() {
+    
+    ExprNode* left = and_test();
     Token tok = tokenizer.getToken();
     while (tok.isKeyword() && tok.isOr()) {
+        tok.relationalSymbol("or");
         InfixExprNode* p = new InfixExprNode(tok);
         p->left() = left;
-        p->right() = or_test();
+        p->right() = and_test();
         left = p;
         tok = tokenizer.getToken();
     }
@@ -374,27 +353,13 @@ ExprNode* Parser::test() {
 }
 
 ExprNode* Parser::and_test() {
-
     ExprNode* left = not_test();
     Token tok = tokenizer.getToken();
-    while (tok.isKeyword() && tok.isNot()) {
+    while (tok.isKeyword() && tok.isAnd()) {
+        tok.relationalSymbol("and");
         InfixExprNode* p = new InfixExprNode(tok);
         p->left() = left;
         p->right() = not_test();
-        left = p;
-        tok = tokenizer.getToken();
-    }
-    tokenizer.ungetToken();
-    return left;
-}
-
-ExprNode* Parser::or_test() {
-    ExprNode* left = and_test();
-    Token tok = tokenizer.getToken();
-    while (tok.isKeyword() && tok.isAnd()) {
-        InfixExprNode* p = new InfixExprNode(tok);
-        p->left() = left;
-        p->right() = and_test();
         left = p;
         tok = tokenizer.getToken();
     }

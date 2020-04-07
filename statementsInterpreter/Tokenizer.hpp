@@ -28,10 +28,12 @@ private:
     std::vector<int> stack;
     bool parsingANewLine;
     int spaces;
+    bool dedentagain;
     
 
 private:
-    Token indentOrDedent();
+    void indent(Token &t);
+    void dedent(Token &t);
 	std::string readString( char p );
     std::string readName();
     std::string readNumber();

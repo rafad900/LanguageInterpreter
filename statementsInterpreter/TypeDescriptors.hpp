@@ -15,42 +15,42 @@ private:
 	types _type; 
 };
 
-class IntegerTypeDescriptor: public TypeDescriptor {
+class IntDescriptor: public TypeDescriptor {
 public:
-    IntegerTypeDescriptor(std::string variableName, int value);
-    IntegerTypeDescriptor(int value);
+    IntDescriptor(std::string variableName, int value);
+    IntDescriptor(int value);
     std::string name();  // returns the name of the integer variable.
     int intValue();      // returns its value.
 	virtual void print();
-    virtual ~IntegerTypeDescriptor();
+    virtual ~IntDescriptor();
 
 private:
 	std::string _name;
 	int _value;
 };
 
-class DoubleTypeDescriptor: public TypeDescriptor {
+class DblDescriptor: public TypeDescriptor {
 public:
-	DoubleTypeDescriptor(std::string variableName, double value);
-	DoubleTypeDescriptor(double value);
+	DblDescriptor(std::string variableName, double value);
+	DblDescriptor(double value);
 	std::string name();
 	double doubleValue();
 	virtual void print();
-	virtual ~DoubleTypeDescriptor();
+	virtual ~DblDescriptor();
 
 private:
 	std::string _name;
 	double _value;
 };
 
-class StringTypeDescriptor: public TypeDescriptor {
+class StrDescriptor: public TypeDescriptor {
 public:
-	StringTypeDescriptor(std::string variableName, std::string value);
-	StringTypeDescriptor(std::string value);
+	StrDescriptor(std::string variableName, std::string value);
+	StrDescriptor(std::string value);
 	std::string name();
 	std::string stringValue();
 	virtual void print();
-	virtual ~StringTypeDescriptor();
+	virtual ~StrDescriptor();
 
 private:
 	std::string _name;

@@ -7,15 +7,18 @@
 #include <algorithm>
 #include "Tokenizer.hpp"
 
-Token Tokenizer::indentOrDedent() {
-    Token token;
+void Tokenizer::indent(Token &t) {
     parsingANewLine = false;
     if (stack[stack.size() - 1] < spaces) {
-        token.setIndent();
+        t.setIndent();
         //std::cout << "This is the indent spaces: " << spaces << std::endl;
         stack.push_back(spaces);
     }
-    else if (stack.size() > 1 && stack[stack.size() - 1] > spaces) {
+}
+
+void Tokenizer::dedent(Token &t) {
+    parsingANewLine = false;
+    if (stack.size() > 1 && stack[stack.size() - 1] > spaces) {
         if (std::find(stack.begin(), stack.end(), spaces) != stack.end())
             stack.pop_back();
         else {
@@ -23,9 +26,10 @@ Token Tokenizer::indentOrDedent() {
             printProcessedTokens();
             exit(1);
         }
-        token.setDedent();
+        if (stack[stack.size() - 1] != spaces)
+            dedentagain = true;
+        t.setDedent();
     }
-    return token;
 }
 
 void Tokenizer::readComment() {
@@ -87,11 +91,17 @@ std::string Tokenizer::readNumber() {
 }
 
 // Here is the constructor
-Tokenizer::Tokenizer(std::ifstream& stream) : ungottenToken{ false }, inStream{ stream }, lastToken{}, stack{ 0 }, parsingANewLine{ true }, spaces{ 0 } {}
+Tokenizer::Tokenizer(std::ifstream& stream) : ungottenToken{ false }, inStream{ stream }, lastToken{}, stack{ 0 }, parsingANewLine{ true }, spaces{ 0 }, dedentagain{ 0 } {}
 
 Token Tokenizer::getToken() {
     if(ungottenToken) {
         ungottenToken = false;
+        return lastToken;
+    }
+
+    if (dedentagain) {
+        dedentagain = false;
+        dedent(lastToken);
         return lastToken;
     }
 
@@ -107,11 +117,13 @@ Token Tokenizer::getToken() {
 
     Token token;
     if (inStream.eof()) {
-        token.eof() = true;
+        dedent(token);
+        if (!token.isIndent() && !token.isDedent()) 
+            token.eof() = true;
     }
     else if (c == '\n') {
         if (lastToken.eol())
-            token = indentOrDedent();
+            dedent(token);
         parsingANewLine = true;
         spaces = 0;
         numoflines++;
@@ -163,8 +175,10 @@ Token Tokenizer::getToken() {
     	token.setString( readString(c) );
     else if(isalpha(c)) {
         inStream.putback(c);
-        if (parsingANewLine)
-            token = indentOrDedent();
+        if (parsingANewLine) {
+            indent(token);
+            dedent(token);
+        }
         if (!token.isDedent() && !token.isIndent())
             token.setName( readName() );
    	} else if( c == '>' || c == '<') {

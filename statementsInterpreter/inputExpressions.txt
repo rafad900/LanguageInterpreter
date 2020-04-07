@@ -1,11 +1,9 @@
-for i in range(5) {
-    for a in range(10) {
-		print
-		print i
-		print j
-		print
-    }
-}
+for i in range(5):
+    for a in range(10):
+        print
+        print i
+        print a
+        print
 
 #----Test Cases---
 print
@@ -63,15 +61,23 @@ m = 10 / 5
 n = 10 / 6
 o = 12 == 12 == 12
 p = 12 == 12 == 1
-for ab in range(10) {
-	for c in range(7) {
-		q = q - 1
-	}
-	print "this is not right"
-	print q
-	q = q + 2
-}
+for ab in range(10):
+    for c in range(7):
+        q = c - 1
+    print "this is not right"
+    print q
+    q = q + 2
+    xyz = 123
+
 
 q = "omg" + "There is something here !@#$%^&*())"
 #r = ";laksf" - "there"
 s = "Repeat !" * 4
+
+
+a = 5
+for i in range(5):
+    for b in range(a-i):
+        print b
+    for c in range(a-(a-i)):
+        print a

@@ -72,20 +72,20 @@ void PrintStatement::evaluate(SymTab &symTab) {
 		if (e->token().isName()) {
 			TypeDescriptor *parent = symTab.getValueFor(e->token().getName());
 			if (parent->type() == TypeDescriptor::INTEGER) 
-				std::cout << dynamic_cast<IntegerTypeDescriptor *>(parent)->intValue();
+				std::cout << dynamic_cast<IntDescriptor *>(parent)->intValue();
 			else if (parent->type() == TypeDescriptor::DOUBLE)
-				std::cout << dynamic_cast<DoubleTypeDescriptor *>(parent)->doubleValue();
+				std::cout << dynamic_cast<DblDescriptor *>(parent)->doubleValue();
 			else 
-				std::cout << "\"" << dynamic_cast<StringTypeDescriptor *>(parent)->stringValue() << "\"";;
+				std::cout << "\"" << dynamic_cast<StrDescriptor *>(parent)->stringValue() << "\"";;
 			std::cout << " ";
 		} else {
 			TypeDescriptor *parent = e->evaluate(symTab);
 			if (parent->type() == TypeDescriptor::INTEGER) 
-				std::cout << dynamic_cast<IntegerTypeDescriptor *>(parent)->intValue();
+				std::cout << dynamic_cast<IntDescriptor *>(parent)->intValue();
 			else if (parent->type() == TypeDescriptor::DOUBLE)
-				std::cout << dynamic_cast<DoubleTypeDescriptor *>(parent)->doubleValue();
+				std::cout << dynamic_cast<DblDescriptor *>(parent)->doubleValue();
 			else 
-				std::cout << "\"" << dynamic_cast<StringTypeDescriptor *>(parent)->stringValue() << "\"";
+				std::cout << "\"" << dynamic_cast<StrDescriptor *>(parent)->stringValue() << "\"";
 			std::cout << " ";
 		}
 	}
@@ -120,11 +120,11 @@ void ForStatement::evaluate(SymTab& symTab) {
 	for (int i = 0; i < _testlist.size(); i++) {
 		TypeDescriptor* parent = _testlist[i]->evaluate(symTab);
 		if (parent->type() != TypeDescriptor::INTEGER) {
-			std::cout << "parameters for range have to be integers\n";
+			std::cout << "ForStatement::evaluate: parameters for range have to be integers\n";
 			exit(1);
 		}
 		else {
-			parameters.push_back(dynamic_cast<IntegerTypeDescriptor*>(parent)->intValue());
+			parameters.push_back(dynamic_cast<IntDescriptor*>(parent)->intValue());
 		}
 	}
 
@@ -136,10 +136,12 @@ void ForStatement::evaluate(SymTab& symTab) {
 		rg = new Range(parameters[0], parameters[1], parameters[2]);
 	
 	while (rg->condition()) {
-		symTab.setValueFor(_id, new IntegerTypeDescriptor(rg->current()));
+		symTab.setValueFor(_id, new IntDescriptor(rg->current()));
 		_stms->evaluate(symTab);
 		rg->next();
 	}
+
+	parameters.clear();
 }
 
 void ForStatement::print() {
@@ -159,7 +161,7 @@ IfStatement::IfStatement() : testSuites{ 0 } {}
 
 void IfStatement::evaluate(SymTab &symTab) {
 	for (int i = 0; i < testSuites.size(); i++) {
-		if (dynamic_cast<IntegerTypeDescriptor*>(testSuites[i].first->evaluate(symTab))->intValue()) {
+		if (dynamic_cast<IntDescriptor*>(testSuites[i].first->evaluate(symTab))->intValue()) {
 			testSuites[i].second->evaluate(symTab);
 			break;
 		}

@@ -55,7 +55,7 @@ public:
 	bool isLessThan() const 	{ return _symbol == '<'; }
 	bool isGreaterThan() const 	{ return _symbol == '>'; }
 	bool isEqualTo() const 		{ return _relationalSymbol == "=="; }
-	bool isNotEqualTo() const	{ return _relationalSymbol == "!="; }
+	bool isNotEqualTo() const	{ return _relationalSymbol == "!=" || _relationalSymbol == "<>"; }
 	bool isLessOrEqual() const	{ return _relationalSymbol == "<="; }
 	bool isGreaterOrEqual() const	{return _relationalSymbol == ">="; }
 	bool isRelationalOperator() const { 
