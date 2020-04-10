@@ -19,6 +19,7 @@ public:
     Token token();
     virtual void print() = 0;
     virtual TypeDescriptor* evaluate(SymTab &symTab) = 0;
+    virtual ~ExprNode();
 
 private:
     Token _token;
@@ -34,11 +35,11 @@ public:
     ExprNode *&right();
     virtual void print();
     virtual TypeDescriptor* evaluate(SymTab &symTab);
+    virtual ~InfixExprNode();
 
 
 private:
     ExprNode *_left, *_right;
-    TypeDescriptor *result;
 };
 
 // WholeNumber is a leaf-node in an expression tree. It corresponds to
@@ -50,6 +51,7 @@ public:
     WholeNumber(Token token);
     virtual void print();
     virtual TypeDescriptor* evaluate(SymTab &symTab);
+    virtual ~WholeNumber();
 };
 
 // Varialbe is a leaf-node in an expression tree. It corresponds to
@@ -61,6 +63,7 @@ public:
     Variable(Token token);
     virtual void print();
     virtual TypeDescriptor* evaluate(SymTab &symTab);
+    virtual ~Variable();
 };
 
 // Just another leaf in the expression tree. It corresponds to a terminal 
@@ -71,6 +74,7 @@ public:
 	UserString(Token token);
 	virtual void print();
 	virtual TypeDescriptor* evaluate(SymTab &symTab);
+    virtual ~UserString();
 };
 
 class DoubleNumber: public ExprNode {
@@ -78,6 +82,7 @@ public:
 	DoubleNumber(Token token);
 	virtual void print();
 	virtual TypeDescriptor* evaluate(SymTab &symTab);
+    virtual ~DoubleNumber();
 };
 
 #endif //EXPRINTER_ARITHEXPR_HPP

@@ -30,6 +30,7 @@ int main(int argc, char *argv[]) {
     Token lastToken = tokenizer.getToken();
 	while (lastToken.eol()) 
 		lastToken = tokenizer.getToken();
+    inputStream.close();
     // Checks for the end of file token, if not found, the it will say that it found unexpected token
     if ( !lastToken.eof()) {
         std::cout << "Unexpected token in input." << std::endl;
@@ -38,16 +39,14 @@ int main(int argc, char *argv[]) {
     }
     // Creates this symtab object
     SymTab symTab;
-    //std::cout << "\nABOUT TO PRINT\n";
-    //statements->print();
+    std::cout << "\nABOUT TO PRINT\n";
+    statements->print();
     std::cout << "ABOUT TO EVALUATE\n";
 	statements->evaluate(symTab);
 
     // uses the symTab to evaluate the statements
-    //std::cout << std::endl << "Symbol table contains the following variables.\n";
-    //symTab.print();
     std::cout << "\n\nNumber of lines: " << tokenizer.getnumoflines() << std::endl;
     delete statements;
-    //tokenizer.printProcessedTokens();
+    symTab.delete_descriptors();
     return 0;
 }

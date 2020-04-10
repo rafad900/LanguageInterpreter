@@ -24,6 +24,7 @@ public:
 
     virtual void print() = 0;
     virtual void evaluate(SymTab &symTab) = 0;
+	virtual ~Statement();
 
 };
 
@@ -39,7 +40,7 @@ public:
     void evaluate(SymTab &symTab);
 
     void print();
-    ~Statements();
+    virtual ~Statements();
 
 private:
     std::vector<Statement *> _statements;
@@ -59,6 +60,7 @@ public:
 	
     virtual void evaluate(SymTab &symTab);
     virtual void print();
+	virtual ~AssignmentStatement();
 
 	private:
     std::string _lhsVariable;
@@ -73,12 +75,10 @@ class PrintStatement : public Statement {
 
 		virtual void evaluate(SymTab &symTab);
 		virtual void print();
+		virtual ~PrintStatement();
 
 	private:
 		std::vector<ExprNode *> _testlist;
-//		std::string _name;
-//		TypeDescriptor *_var;
-//		ExprNode * _printString;
 };
 
 class ForStatement : public Statement {
@@ -89,6 +89,7 @@ class ForStatement : public Statement {
 		
 		virtual void evaluate(SymTab &symTab);
 		virtual void print();
+		virtual ~ForStatement();
 
 	private:
 		std::string _id;
@@ -104,6 +105,7 @@ public:
 	virtual void evaluate(SymTab& symTab);
 	virtual void print();
 	void insertSuite(ExprNode* test, Statements* stms);
+	virtual ~IfStatement();
 
 private:
 	std::vector<std::pair<ExprNode* , Statements*>> testSuites;

@@ -20,7 +20,7 @@ public:
     bool isDefined(TypeDescriptor *value);
     TypeDescriptor* getValueFor(std::string vName);
     void print();
-    ~SymTab();
+    void delete_descriptors();
 
 private:
     std::map<std::string, TypeDescriptor *> symTab;

@@ -11,14 +11,11 @@ void SymTab::setValueFor(std::string vName, TypeDescriptor *td) {
     	delete getValueFor(vName);
     }
 	if (td->type() == TypeDescriptor::INTEGER) {
-		IntDescriptor *child = dynamic_cast<IntDescriptor *>(td);
-		std::cout << vName << " <- " << child->intValue() << std::endl;
+		std::cout << vName << " <- " << dynamic_cast<IntDescriptor*>(td)->intValue() << std::endl;
 	} else if (td->type() == TypeDescriptor::STRING) {
-		StrDescriptor *child = dynamic_cast<StrDescriptor *>(td);
-		std::cout << vName << " <- " << "\"" << child->stringValue() << "\"" << std::endl;
+		std::cout << vName << " <- " << "\"" << dynamic_cast<StrDescriptor*>(td)->stringValue() << "\"" << std::endl;
 	} else if (td->type() == TypeDescriptor::DOUBLE) {
-		DblDescriptor *child = dynamic_cast<DblDescriptor *>(td);
-		std::cout << vName << " <- " << child->doubleValue() << std::endl;
+		std::cout << vName << " <- " << dynamic_cast<DblDescriptor*>(td)->doubleValue() << std::endl;
 	}
     symTab[vName] = td;
 }
@@ -39,17 +36,14 @@ TypeDescriptor* SymTab::getValueFor(std::string vName) {
         std::cout << "SymTab::getValueFor: " << vName << " has not been defined.\n";
         exit(1);
 	} else if (symTab.find(vName)->second->type() == TypeDescriptor::INTEGER) {
-		IntDescriptor *child = dynamic_cast<IntDescriptor*>(symTab.find(vName)->second);
-		std::cout << "SymTab::getValueFor: " << vName << " contains " << child->intValue() << std::endl;
-	    return child;
+		std::cout << "SymTab::getValueFor: " << vName << " contains " << dynamic_cast<IntDescriptor*>(symTab.find(vName)->second)->intValue() << std::endl;
+	    return  dynamic_cast<IntDescriptor*>(symTab.find(vName)->second);
 	} else if (symTab.find(vName)->second->type() == TypeDescriptor::STRING) {
-		StrDescriptor *child = dynamic_cast<StrDescriptor*>(symTab.find(vName)->second);
-		std::cout << "SymTab::getValueFor: " << vName << " contains " << child->stringValue() << std::endl;
-	    return child;
+		std::cout << "SymTab::getValueFor: " << vName << " contains " << dynamic_cast<StrDescriptor*>(symTab.find(vName)->second)->stringValue() << std::endl;
+	    return dynamic_cast<StrDescriptor*>(symTab.find(vName)->second);
 	} else if (symTab.find(vName)->second->type() == TypeDescriptor::DOUBLE) {
-		DblDescriptor *child = dynamic_cast<DblDescriptor*>(symTab.find(vName)->second);
-	  	std::cout << "SymTab::getValueFor: " << vName << " contains " << child->doubleValue() << std::endl;
-	    return child;
+	  	std::cout << "SymTab::getValueFor: " << vName << " contains " << dynamic_cast<DblDescriptor*>(symTab.find(vName)->second)->doubleValue() << std::endl;
+	    return dynamic_cast<DblDescriptor*>(symTab.find(vName)->second);
 	}	
 	return nullptr;	
 }
@@ -57,19 +51,16 @@ TypeDescriptor* SymTab::getValueFor(std::string vName) {
 void SymTab::print() {
     for(auto [var, value] : symTab ) {
 		if (value->type() == TypeDescriptor::INTEGER) {
-			IntDescriptor *child = dynamic_cast<IntDescriptor *>(value);
-			std::cout << var << " = " << child->intValue() << std::endl;
+			std::cout << var << " = " << dynamic_cast<IntDescriptor*>(value)->intValue() << std::endl;
 		} else if (value->type() == TypeDescriptor::STRING) {
-		 	StrDescriptor *child = dynamic_cast<StrDescriptor *>(value);
-			std::cout << var << " = " << "\"" << child->stringValue() << "\"" << std::endl;
+			std::cout << var << " = " << "\"" << dynamic_cast<StrDescriptor*>(value)->stringValue() << "\"" << std::endl;
 		} else if (value->type() == TypeDescriptor::DOUBLE) {
-			DblDescriptor *child = dynamic_cast<DblDescriptor *>(value);
-			std::cout << var << " = " << child->doubleValue() << std::endl;
+			std::cout << var << " = " << dynamic_cast<DblDescriptor*>(value)->doubleValue() << std::endl;
 		}
     }
 }
 
-SymTab::~SymTab() {
+void SymTab::delete_descriptors() {
 	std::map<std::string, TypeDescriptor *>::iterator it = symTab.begin();
 	while (it != symTab.end()) {
 		TypeDescriptor * value = it->second;

@@ -9,6 +9,8 @@
 // Statement
 Statement::Statement() {}
 
+Statement::~Statement() {}
+
 // Statements
 
 Statements::Statements() {}
@@ -27,11 +29,9 @@ void Statements::evaluate(SymTab &symTab) {
 }
 
 Statements::~Statements() {
-	std::vector<Statement *>::iterator ptr;
-	for (ptr = _statements.begin(); ptr < _statements.end(); ptr++) 
-		delete *ptr;
-		// WOULD ALSO NEED TO ADD DESTRUCTOR TO EACH OF THE ExprNode CHILDREN CLASSES 
-		// BUT THAT SEEMS UNECESSARY REALLY
+	for (auto s : _statements) {
+		delete s;
+	}
 }
 
 // AssignmentStatement
@@ -59,6 +59,12 @@ void AssignmentStatement::print() {
     _rhsExpression->print();
 }
 
+AssignmentStatement::~AssignmentStatement() {
+	delete _rhsExpression;
+}
+
+// Print Statement 
+
 PrintStatement::PrintStatement() : _testlist{NULL} {}
 
 PrintStatement::PrintStatement(std::vector<ExprNode *> testlist): _testlist{testlist} {}
@@ -78,6 +84,8 @@ void PrintStatement::evaluate(SymTab &symTab) {
 			else 
 				std::cout << "\"" << dynamic_cast<StrDescriptor *>(parent)->stringValue() << "\"";;
 			std::cout << " ";
+			if (!symTab.isDefined(parent))
+				delete parent;
 		} else {
 			TypeDescriptor *parent = e->evaluate(symTab);
 			if (parent->type() == TypeDescriptor::INTEGER) 
@@ -87,6 +95,8 @@ void PrintStatement::evaluate(SymTab &symTab) {
 			else 
 				std::cout << "\"" << dynamic_cast<StrDescriptor *>(parent)->stringValue() << "\"";
 			std::cout << " ";
+			if (!symTab.isDefined(parent))
+				delete parent;
 		}
 	}
 	std::cout << std::endl;
@@ -99,6 +109,14 @@ void PrintStatement::print() {
 		std::cout << " ";
 	}
 }
+
+PrintStatement::~PrintStatement() {
+	for (auto p : _testlist)
+		delete p;
+	_testlist.clear();
+}
+
+// For Statement 
 
 ForStatement::ForStatement() : _testlist{ NULL }, _stms{ nullptr }, _id{ "\0" } {}
 
@@ -126,6 +144,8 @@ void ForStatement::evaluate(SymTab& symTab) {
 		else {
 			parameters.push_back(dynamic_cast<IntDescriptor*>(parent)->intValue());
 		}
+		if (!symTab.isDefined(parent))
+			delete parent;
 	}
 
 	if (parameters.size() == 1)
@@ -140,7 +160,7 @@ void ForStatement::evaluate(SymTab& symTab) {
 		_stms->evaluate(symTab);
 		rg->next();
 	}
-
+	delete rg;
 	parameters.clear();
 }
 
@@ -155,6 +175,14 @@ void ForStatement::print() {
 	std::cout << ") { \n";
 	_stms->print();
 	std::cout << "}\n";
+}
+
+ForStatement::~ForStatement() {
+	for (auto p : _testlist)
+		delete p;
+	delete _stms;
+	_testlist.clear();
+	parameters.clear();
 }
 
 IfStatement::IfStatement() : testSuites{ 0 } {}
@@ -185,4 +213,12 @@ void IfStatement::print() {
 
 void IfStatement::insertSuite(ExprNode* test, Statements* stms) {
 	testSuites.push_back(std::make_pair(test, stms));
+}
+
+IfStatement::~IfStatement() {
+	for (int i = 0; i < testSuites.size(); i++) {
+		delete testSuites[i].first;
+		delete testSuites[i].second;
+	}
+	testSuites.clear();
 }

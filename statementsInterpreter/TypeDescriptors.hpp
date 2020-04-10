@@ -6,10 +6,11 @@
 class TypeDescriptor {
 public:
 	enum  types {BOOL, DOUBLE, STRING, INTEGER};
-	TypeDescriptor(types type): _type{type} {}
+	TypeDescriptor(types type);
 	types &type() { return _type; }
 	virtual void print() = 0;
-	virtual ~TypeDescriptor() {}
+	virtual 
+	virtual ~TypeDescriptor();
 	
 private:
 	types _type; 

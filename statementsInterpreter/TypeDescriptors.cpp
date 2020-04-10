@@ -2,6 +2,10 @@
 #include <cmath>
 #include <iostream> 
 
+// TypeDescriptor 
+TypeDescriptor::TypeDescriptor(types type): _type { type } {}
+TypeDescriptor::~TypeDescriptor() {}
+
 // Integer Type Descriptor
 IntDescriptor::IntDescriptor(std::string variableName, int value)
 :TypeDescriptor (TypeDescriptor::INTEGER) 
@@ -318,24 +322,18 @@ int NOT_of_double_and_double(double l) {
  */
 TypeDescriptor* perform_operation( TypeDescriptor* lValue, TypeDescriptor* rValue, int opcode) {
 	if ((lValue->type() == TypeDescriptor::STRING && rValue->type() == TypeDescriptor::STRING)) {		// STRING and STRING
-		StrDescriptor *left  = dynamic_cast<StrDescriptor *>(lValue);
-		StrDescriptor *right = dynamic_cast<StrDescriptor *>(rValue);
-       	if (opcode == 1) return new StrDescriptor(addition_of_string_and_string ( left->stringValue(), right->stringValue()));
-		else if (opcode > 4) return new IntDescriptor(string_comparison_string(left->stringValue(), right->stringValue(), opcode));
+       	if (opcode == 1) return new StrDescriptor(addition_of_string_and_string (dynamic_cast<StrDescriptor*>(lValue)->stringValue(), dynamic_cast<StrDescriptor*>(rValue)->stringValue()));
+		else if (opcode > 4) return new IntDescriptor(string_comparison_string(dynamic_cast<StrDescriptor*>(lValue)->stringValue(), dynamic_cast<StrDescriptor*>(rValue)->stringValue(), opcode));
         else { std::cout << "Only operation supported for string and string is addition\n"; exit(2);}
 
 	} else if ((lValue->type() == TypeDescriptor::INTEGER && rValue->type() == TypeDescriptor::STRING)) {  	// INTEGER and STRING
-		IntDescriptor *left = dynamic_cast<IntDescriptor *>(lValue);
-		StrDescriptor *right = dynamic_cast<StrDescriptor *>(rValue);
-        if (opcode == 3) return new StrDescriptor(multiplication_of_string_and_integer(right->stringValue(), left->intValue()));
+        if (opcode == 3) return new StrDescriptor(multiplication_of_string_and_integer(dynamic_cast<StrDescriptor*>(rValue)->stringValue(), dynamic_cast<IntDescriptor*>(lValue)->intValue()));
 		else if (opcode == 7) return new IntDescriptor(0);
 		else if (opcode == 10)return new IntDescriptor(1);
         else { std::cout << "Only operation supported for string and integer is multiplication\n"; exit(2);}
 
 	} else if ((lValue->type() == TypeDescriptor::STRING && rValue->type() == TypeDescriptor::INTEGER)) { 	 // STRING and INTEGER
-		StrDescriptor *left   = dynamic_cast<StrDescriptor *>(lValue);
-		IntDescriptor *right = dynamic_cast<IntDescriptor *>(rValue);
-        if (opcode == 3) return new StrDescriptor(multiplication_of_string_and_integer(left->stringValue(), right->intValue()));
+        if (opcode == 3) return new StrDescriptor(multiplication_of_string_and_integer(dynamic_cast<StrDescriptor*>(lValue)->stringValue(), dynamic_cast<IntDescriptor*>(rValue)->intValue()));
 		else if (opcode == 7) return new IntDescriptor(0);
 		else if (opcode == 10)return new IntDescriptor(1);
         else { std::cout << "Only operation supported for string and integer is multiplication\n"; exit(2);}
@@ -345,71 +343,55 @@ TypeDescriptor* perform_operation( TypeDescriptor* lValue, TypeDescriptor* rValu
        	std::cout << "No operation supported for string and double"; exit(2);
 
 	} else if ((lValue->type() == TypeDescriptor::INTEGER && rValue->type() == TypeDescriptor::INTEGER)) {	// INTEGER and INTEGER
-		IntDescriptor* left;
-   		if (lValue != nullptr)
-			left  = dynamic_cast<IntDescriptor *>(lValue);
-   		IntDescriptor *right = dynamic_cast<IntDescriptor *>(rValue);
-		if (opcode == 3) return new IntDescriptor(multiplication_of_integer_and_integer(left->intValue(), right->intValue()));
-		else if (opcode == 13) return new IntDescriptor(AND_of_int_and_int(left->intValue(), right->intValue()));
-		else if (opcode == 14) return new IntDescriptor(OR__of_int_and_int(left->intValue(), right->intValue()));
-		else if (opcode == 15) return new IntDescriptor(NOT_of_int_and_int(right->intValue()));
-        else if (opcode == 12) return new IntDescriptor( floor(division_of_integer_and_integer(left->intValue(), right->intValue())));
-        else if (opcode == 11) return new IntDescriptor(modulo_of_int_and_int(left->intValue(), right->intValue()));
-        else if (opcode == 4) return new IntDescriptor(division_of_integer_and_integer(left->intValue(), right->intValue()));
-        else if (opcode == 2) return new IntDescriptor(subtraction_of_integer_and_integer(left->intValue(), right->intValue()));
-        else if (opcode == 1) return new IntDescriptor(addition_of_integer_and_integer(left->intValue(), right->intValue()));
-		else if (opcode > 4) return new IntDescriptor(integer_comparison_integer(left->intValue(), right->intValue(), opcode));
+		if (opcode == 3) return new IntDescriptor(multiplication_of_integer_and_integer(dynamic_cast<IntDescriptor*>(lValue)->intValue(), dynamic_cast<IntDescriptor*>(rValue)->intValue()));
+		else if (opcode == 13) return new IntDescriptor(AND_of_int_and_int(dynamic_cast<IntDescriptor*>(lValue)->intValue(), dynamic_cast<IntDescriptor*>(rValue)->intValue()));
+		else if (opcode == 14) return new IntDescriptor(OR__of_int_and_int(dynamic_cast<IntDescriptor*>(lValue)->intValue(), dynamic_cast<IntDescriptor*>(rValue)->intValue()));
+		else if (opcode == 15) return new IntDescriptor(NOT_of_int_and_int(dynamic_cast<IntDescriptor*>(rValue)->intValue()));
+        else if (opcode == 12) return new IntDescriptor( floor(division_of_integer_and_integer(dynamic_cast<IntDescriptor*>(lValue)->intValue(), dynamic_cast<IntDescriptor*>(rValue)->intValue())));
+        else if (opcode == 11) return new IntDescriptor(modulo_of_int_and_int(dynamic_cast<IntDescriptor*>(lValue)->intValue(), dynamic_cast<IntDescriptor*>(rValue)->intValue()));
+        else if (opcode == 4) return new IntDescriptor(division_of_integer_and_integer(dynamic_cast<IntDescriptor*>(lValue)->intValue(), dynamic_cast<IntDescriptor*>(rValue)->intValue()));
+        else if (opcode == 2) return new IntDescriptor(subtraction_of_integer_and_integer(dynamic_cast<IntDescriptor*>(lValue)->intValue(), dynamic_cast<IntDescriptor*>(rValue)->intValue()));
+        else if (opcode == 1) return new IntDescriptor(addition_of_integer_and_integer(dynamic_cast<IntDescriptor*>(lValue)->intValue(), dynamic_cast<IntDescriptor*>(rValue)->intValue()));
+		else if (opcode > 4) return new IntDescriptor(integer_comparison_integer(dynamic_cast<IntDescriptor*>(lValue)->intValue(), dynamic_cast<IntDescriptor*>(rValue)->intValue(), opcode));
         else { std::cout << "Operation: not supported for integer and integer"; exit(2); }
 
     } else if ((lValue->type() == TypeDescriptor::INTEGER && rValue->type() == TypeDescriptor::DOUBLE)) {	// INTEGER and DOUBLE 
-		IntDescriptor* left;
-		if (lValue != nullptr)
-			left = dynamic_cast<IntDescriptor*>(lValue);
-		DblDescriptor *right = dynamic_cast<DblDescriptor *>(rValue);
-        if (opcode == 3) return new DblDescriptor(multiplication_of_integer_and_double(left->intValue(), right->doubleValue()));
-		else if (opcode == 13) return new IntDescriptor(AND_of_double_and_int(left->intValue(), right->doubleValue()));
-		else if (opcode == 14) return new IntDescriptor(OR__of_double_and_int(left->intValue(), right->doubleValue()));
-		else if (opcode == 15) return new IntDescriptor(NOT_of_double_and_int(right->doubleValue()));
-		else if (opcode == 11) return new DblDescriptor(modulo_of_int_and_double(left->intValue(), right->doubleValue(), false));
-		else if (opcode == 12) return new IntDescriptor(division_of_integer_and_double(left->intValue(), right->doubleValue(), false));
-        else if (opcode == 4) return new DblDescriptor(division_of_integer_and_double(left->intValue(), right->doubleValue(), false));
-        else if (opcode == 2) return new DblDescriptor(subtraction_of_integer_and_double(left->intValue(), right->doubleValue(), false));
-        else if (opcode == 1) return new DblDescriptor(addition_of_integer_and_double(left->intValue(), right->doubleValue()));
- 		else if (opcode > 4) return new IntDescriptor(integer_comparison_double(left->intValue(), right->doubleValue(), opcode, false));
+        if (opcode == 3) return new DblDescriptor(multiplication_of_integer_and_double(dynamic_cast<IntDescriptor*>(lValue)->intValue(), dynamic_cast<DblDescriptor*>(rValue)->doubleValue()));
+		else if (opcode == 13) return new IntDescriptor(AND_of_double_and_int(dynamic_cast<IntDescriptor*>(lValue)->intValue(), dynamic_cast<DblDescriptor*>(rValue)->doubleValue()));
+		else if (opcode == 14) return new IntDescriptor(OR__of_double_and_int(dynamic_cast<IntDescriptor*>(lValue)->intValue(), dynamic_cast<DblDescriptor*>(rValue)->doubleValue()));
+		else if (opcode == 15) return new IntDescriptor(NOT_of_double_and_int(dynamic_cast<DblDescriptor*>(rValue)->doubleValue()));
+		else if (opcode == 11) return new DblDescriptor(modulo_of_int_and_double(dynamic_cast<IntDescriptor*>(lValue)->intValue(), dynamic_cast<DblDescriptor*>(rValue)->doubleValue(), false));
+		else if (opcode == 12) return new IntDescriptor(division_of_integer_and_double(dynamic_cast<IntDescriptor*>(lValue)->intValue(), dynamic_cast<DblDescriptor*>(rValue)->doubleValue(), false));
+        else if (opcode == 4) return new DblDescriptor(division_of_integer_and_double(dynamic_cast<IntDescriptor*>(lValue)->intValue(), dynamic_cast<DblDescriptor*>(rValue)->doubleValue(), false));
+        else if (opcode == 2) return new DblDescriptor(subtraction_of_integer_and_double(dynamic_cast<IntDescriptor*>(lValue)->intValue(), dynamic_cast<DblDescriptor*>(rValue)->doubleValue(), false));
+        else if (opcode == 1) return new DblDescriptor(addition_of_integer_and_double(dynamic_cast<IntDescriptor*>(lValue)->intValue(), dynamic_cast<DblDescriptor*>(rValue)->doubleValue()));
+ 		else if (opcode > 4) return new IntDescriptor(integer_comparison_double(dynamic_cast<IntDescriptor*>(lValue)->intValue(), dynamic_cast<DblDescriptor*>(rValue)->doubleValue(), opcode, false));
  		else { std::cout << "Operation: not supported for integer and double"; exit(2); }
 
     } else if ((lValue->type() == TypeDescriptor::DOUBLE && rValue->type() == TypeDescriptor::INTEGER)) {	// DOUBLE and INTEGER
-		DblDescriptor* left;
-		if (lValue != nullptr)
-			left = dynamic_cast<DblDescriptor*>(lValue);		IntDescriptor *right = dynamic_cast<IntDescriptor *>(rValue);
-       	if (opcode == 3) return new DblDescriptor(multiplication_of_integer_and_double(left->doubleValue(), right->intValue()));
-		else if (opcode == 13) return new IntDescriptor(AND_of_double_and_int(left->doubleValue(), right->intValue()));
-		else if (opcode == 14) return new IntDescriptor(OR__of_double_and_int(left->doubleValue(), right->intValue()));
-		else if (opcode == 15) return new IntDescriptor(NOT_of_int_and_int(right->intValue()));
-		else if (opcode == 11) return new DblDescriptor(modulo_of_int_and_double(left->doubleValue(), right->intValue(), true));
-		else if (opcode == 12) return new IntDescriptor(division_of_integer_and_double(right->intValue(), left->doubleValue(), true));
-        else if (opcode == 4) return new DblDescriptor(division_of_integer_and_double(left->doubleValue(), right->intValue(), true));
-        else if (opcode == 2) return new DblDescriptor(subtraction_of_integer_and_double(left->doubleValue(), right->intValue(), true));
-        else if (opcode == 1) return new DblDescriptor(addition_of_integer_and_double(left->doubleValue(), right->intValue()));
-		else if (opcode > 4) return new IntDescriptor(integer_comparison_double(left->doubleValue(), right->intValue(), opcode, true));
-
+       	if (opcode == 3) return new DblDescriptor(multiplication_of_integer_and_double(dynamic_cast<DblDescriptor*>(lValue)->doubleValue(), dynamic_cast<IntDescriptor*>(rValue)->intValue()));
+		else if (opcode == 13) return new IntDescriptor(AND_of_double_and_int(dynamic_cast<DblDescriptor*>(lValue)->doubleValue(), dynamic_cast<IntDescriptor*>(rValue)->intValue()));
+		else if (opcode == 14) return new IntDescriptor(OR__of_double_and_int(dynamic_cast<DblDescriptor*>(lValue)->doubleValue(), dynamic_cast<IntDescriptor*>(rValue)->intValue()));
+		else if (opcode == 15) return new IntDescriptor(NOT_of_int_and_int(dynamic_cast<IntDescriptor*>(rValue)->intValue()));
+		else if (opcode == 11) return new DblDescriptor(modulo_of_int_and_double(dynamic_cast<DblDescriptor*>(lValue)->doubleValue(), dynamic_cast<IntDescriptor*>(rValue)->intValue(), true));
+		else if (opcode == 12) return new IntDescriptor(division_of_integer_and_double(dynamic_cast<IntDescriptor*>(rValue)->intValue(), dynamic_cast<DblDescriptor*>(lValue)->doubleValue(), true));
+        else if (opcode == 4) return new DblDescriptor(division_of_integer_and_double(dynamic_cast<DblDescriptor*>(lValue)->doubleValue(), dynamic_cast<IntDescriptor*>(rValue)->intValue(), true));
+        else if (opcode == 2) return new DblDescriptor(subtraction_of_integer_and_double(dynamic_cast<DblDescriptor*>(lValue)->doubleValue(), dynamic_cast<IntDescriptor*>(rValue)->intValue(), true));
+        else if (opcode == 1) return new DblDescriptor(addition_of_integer_and_double(dynamic_cast<DblDescriptor*>(lValue)->doubleValue(), dynamic_cast<IntDescriptor*>(rValue)->intValue()));
+		else if (opcode > 4) return new IntDescriptor(integer_comparison_double(dynamic_cast<DblDescriptor*>(lValue)->doubleValue(), dynamic_cast<IntDescriptor*>(rValue)->intValue(), opcode, true));
         else { std::cout << "Operation: not supported for integer and double"; exit(2); }
 
     } else if ((lValue->type() == TypeDescriptor::DOUBLE && rValue->type() == TypeDescriptor::DOUBLE)) {	// DOUBLE and DOUBLE 
-		DblDescriptor* left;
-		if (lValue != nullptr)
-			left = dynamic_cast<DblDescriptor*>(lValue);
-		DblDescriptor *right = dynamic_cast<DblDescriptor *>(rValue);
-		if (opcode == 3) return new DblDescriptor(multiplication_of_double_and_double(left->doubleValue(), right->doubleValue()));
-		else if (opcode == 13) return new IntDescriptor(AND_of_double_and_double(left->doubleValue(), right->doubleValue()));
-		else if (opcode == 14) return new IntDescriptor(OR__of_double_and_double(left->doubleValue(), right->doubleValue()));
-		else if (opcode == 15) return new IntDescriptor(NOT_of_double_and_double(right->doubleValue()));
-		else if (opcode == 11) return new DblDescriptor(modulo_of_double_and_double(left->doubleValue(), right->doubleValue()));
-		else if (opcode == 12) return new IntDescriptor(division_of_double_and_double(left->doubleValue(), right->doubleValue()));
-        else if (opcode == 4) return new DblDescriptor(division_of_double_and_double(left->doubleValue(), right->doubleValue()));
-        else if (opcode == 2) return new DblDescriptor(subtraction_of_double_and_double(left->doubleValue(), right->doubleValue()));
-        else if (opcode == 1) return new DblDescriptor(addition_of_double_and_double(left->doubleValue(), right->doubleValue()));
-		else if (opcode > 4) return new IntDescriptor(double_comparison_double(left->doubleValue(), right->doubleValue(), opcode));
+		if (opcode == 3) return new DblDescriptor(multiplication_of_double_and_double(dynamic_cast<DblDescriptor*>(lValue)->doubleValue(), dynamic_cast<DblDescriptor*>(rValue)->doubleValue()));
+		else if (opcode == 13) return new IntDescriptor(AND_of_double_and_double(dynamic_cast<DblDescriptor*>(lValue)->doubleValue(), dynamic_cast<DblDescriptor*>(rValue)->doubleValue()));
+		else if (opcode == 14) return new IntDescriptor(OR__of_double_and_double(dynamic_cast<DblDescriptor*>(lValue)->doubleValue(), dynamic_cast<DblDescriptor*>(rValue)->doubleValue()));
+		else if (opcode == 15) return new IntDescriptor(NOT_of_double_and_double(dynamic_cast<DblDescriptor*>(rValue)->doubleValue()));
+		else if (opcode == 11) return new DblDescriptor(modulo_of_double_and_double(dynamic_cast<DblDescriptor*>(lValue)->doubleValue(), dynamic_cast<DblDescriptor*>(rValue)->doubleValue()));
+		else if (opcode == 12) return new IntDescriptor(division_of_double_and_double(dynamic_cast<DblDescriptor*>(lValue)->doubleValue(), dynamic_cast<DblDescriptor*>(rValue)->doubleValue()));
+        else if (opcode == 4) return new DblDescriptor(division_of_double_and_double(dynamic_cast<DblDescriptor*>(lValue)->doubleValue(), dynamic_cast<DblDescriptor*>(rValue)->doubleValue()));
+        else if (opcode == 2) return new DblDescriptor(subtraction_of_double_and_double(dynamic_cast<DblDescriptor*>(lValue)->doubleValue(), dynamic_cast<DblDescriptor*>(rValue)->doubleValue()));
+        else if (opcode == 1) return new DblDescriptor(addition_of_double_and_double(dynamic_cast<DblDescriptor*>(lValue)->doubleValue(), dynamic_cast<DblDescriptor*>(rValue)->doubleValue()));
+		else if (opcode > 4) return new IntDescriptor(double_comparison_double(dynamic_cast<DblDescriptor*>(lValue)->doubleValue(), dynamic_cast<DblDescriptor*>(rValue)->doubleValue(), opcode));
         else { std::cout << "Operation: not supported for double and double"; exit(2); }
 	}
 }

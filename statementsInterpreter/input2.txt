@@ -1,7 +1,2 @@
-
-a = 1
-
-if not not 1 and not not 1:
-    print "this should print"
-
-
+for x in range(10):
+    print 1

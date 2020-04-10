@@ -12,15 +12,24 @@ ExprNode::ExprNode(Token token): _token{token} {}
 
 Token ExprNode::token() { return _token; }
 
+ExprNode::~ExprNode() {};
+
 // InfixExprNode functions
-InfixExprNode::InfixExprNode(Token tk) : ExprNode{ tk }, _left(nullptr), _right(nullptr), result{ nullptr } {}
+InfixExprNode::InfixExprNode(Token tk) : ExprNode{ tk }, _left(nullptr), _right(nullptr) {}
 
 ExprNode *&InfixExprNode::left() { return _left; }
 
 ExprNode *&InfixExprNode::right() { return _right; }
 
+InfixExprNode::~InfixExprNode() {
+    if (_left != nullptr)
+        delete _left;
+    if (_right != nullptr) 
+        delete _right;
+}
+
 TypeDescriptor* InfixExprNode::evaluate(SymTab &symTab) {
-    TypeDescriptor* lValue = new IntDescriptor(3);
+    TypeDescriptor* lValue;
     if (left() != nullptr)
         lValue = left()->evaluate(symTab);
     TypeDescriptor* rValue = right()->evaluate(symTab);
@@ -79,16 +88,16 @@ TypeDescriptor* InfixExprNode::evaluate(SymTab &symTab) {
         std::cout << std::endl;
         exit(2);
     }
-    if (!symTab.isDefined(lValue)) 
-    	delete lValue;
     if (!symTab.isDefined(rValue))
-    	delete rValue;
-	result = res;
+        delete rValue;
+    if (!symTab.isDefined(lValue))
+        delete lValue;
     return res;
 }
 
 void InfixExprNode::print() {
-    _left->print();
+    if (_left != nullptr)
+        _left->print();
     token().print();
     _right->print();
 }
@@ -102,9 +111,10 @@ void WholeNumber::print() {
 
 TypeDescriptor* WholeNumber::evaluate(SymTab &symTab) {
     //std::cout << "WholeNumber::evaluate: returning " << token().getWholeNumber() << std::endl;
-    TypeDescriptor *value = new IntDescriptor(token().getWholeNumber());
-    return value;
+    return new IntDescriptor(token().getWholeNumber());
 }
+
+WholeNumber::~WholeNumber() {}
 
 // Variable
 
@@ -120,9 +130,10 @@ TypeDescriptor* Variable::evaluate(SymTab &symTab) {
         exit(1);
     }
     //std::cout << "Variable::evaluate: returning " << std::endl;
-    TypeDescriptor *value = symTab.getValueFor(token().getName());
-    return value;
+    return symTab.getValueFor(token().getName());
 }
+
+Variable::~Variable() {}
 
 // UserString
 
@@ -136,9 +147,10 @@ void UserString::print() {
 
 TypeDescriptor* UserString::evaluate(SymTab &symTab) {
     //std::cout << "UserString::evaluate: returning " << token().getString() << std::endl;
-    TypeDescriptor *value = new StrDescriptor(token().getString());
-    return value;
+    return new StrDescriptor(token().getString());
 }
+
+UserString::~UserString() {}
 
 // DoubleNumber
 
@@ -150,6 +162,7 @@ void DoubleNumber::print() {
 
 TypeDescriptor* DoubleNumber::evaluate(SymTab &symTab) {
     //std::cout << "Double::evaluate: returning " << token().getDouble() << std::endl;
-    TypeDescriptor *value = new DblDescriptor(token().getDouble());
-    return value;
+    return new DblDescriptor(token().getDouble());
 }
+
+DoubleNumber::~DoubleNumber() {}
