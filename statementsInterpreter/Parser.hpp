@@ -37,6 +37,7 @@ public:
     ExprNode* or_test();
     ExprNode* and_test();
     ExprNode* not_test();
+    ExprNode* subscription(ExprNode* variable, Token tok);
 
 private:
     Tokenizer &tokenizer;

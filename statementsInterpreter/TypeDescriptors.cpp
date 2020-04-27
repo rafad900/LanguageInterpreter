@@ -94,30 +94,35 @@ void StrDescriptor::print() {
 	std::cout << _value;
 }
 
-/* 
- *
- * THESE DEFINITIONS ARE UNECESSARY AT THE MOMENT BUT MIGHT BE USEFUL LATER
-BooleanTypeDescriptor::BooleanTypeDescriptor(std::string variableName, bool value) 
-:TypeDescriptor(TypeDescriptor::BOOL)
-{
-	_name = variableName; 
-	_value = value;
-}
+// Array type Descriptor
+ArrDescriptor::ArrDescriptor(std::string variableName, std::vector<ExprNode*> testlist): 
+	TypeDescriptor(TypeDescriptor::ARRAY), _name{ variableName }, _list{ testlist } {}
 
-BooleanTypeDescriptor::BooleanTypeDescriptor(std::string variableName) 
-:TypeDescriptor(TypeDescriptor::BOOL)
-{
-	_name = variableName; 
-	_value = NULL;
-}
+ArrDescriptor::ArrDescriptor(std::vector<ExprNode*> testlist) :
+	TypeDescriptor(TypeDescriptor::ARRAY), _list{ testlist } {}
 
-bool BooleanTypeDescriptor::boolValue() {
-	return _value;
-}
-
-std::string BooleanTypeDescriptor::name() {
+std::string ArrDescriptor::name() {
 	return _name;
-} */
+}
+
+std::vector<ExprNode*> ArrDescriptor::testlist() {
+	return _list;
+}
+
+void ArrDescriptor::print() {
+	std::cout << "[";
+	for (int i = 0; i < _list.size()-1; i++) {
+		std::cout << _list[i] << ",";
+	}
+	std::cout << _list[_list.size()-1] << "]";
+}
+
+ArrDescriptor::~ArrDescriptor() {
+	for (int i = 0; i < _list.size(); i++) {
+		delete _list[i];
+	}
+	_list.clear();
+}
 
 
 /* Type Descriptor operations:

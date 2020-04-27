@@ -166,3 +166,25 @@ TypeDescriptor* DoubleNumber::evaluate(SymTab &symTab) {
 }
 
 DoubleNumber::~DoubleNumber() {}
+
+// Index Class 
+
+Index::Index(Token token) : ExprNode{ token }, _id { nullptr }, _position{ nullptr } {}
+
+ExprNode*& Index::id() { return _id; }
+
+ExprNode*& Index::position() { return _position; }
+
+void Index::print() {
+    _id->print();
+    std::cout << "[";
+    _position->print();
+    std::cout << "]";
+}
+
+TypeDescriptor* Index::evaluate(SymTab& symTab) {
+    return new DblDescriptor(0);
+}
+
+Index::~Index() {}
+

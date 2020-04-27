@@ -19,6 +19,10 @@ public:
 
     bool isOpenParen() const { return _symbol == '('; }
     bool isCloseParen() const { return _symbol == ')'; }
+    bool isOpenBrac() const { return _symbol == '{'; }
+    bool isCloseBrac() const { return _symbol == '}'; }
+    bool isOpenBracket() const { return _symbol == '['; }
+    bool isCloseBracket() const { return _symbol == ']'; }
 
     void symbol(char c) { _symbol = c; }
     char symbol() { return _symbol; }
@@ -37,8 +41,7 @@ public:
     bool isComma() const { return _symbol == ','; }
     bool isSingleQuotes() const { return _symbol == '\''; }
     bool isDoubleQuotes() const { return _symbol == '\"'; }
-    bool isOpenBrac() const { return _symbol == '{'; }
-    bool isCloseBrac() const { return _symbol == '}'; }
+
     bool isKeyword() const { return _name == "print" || _name == "for" || _name == "in" || _name == "range" || 
                                     _name == "and" || _name == "or" || _name == "not" || _name == "if"||
                                     _name == "else" || _name == "elif"; }

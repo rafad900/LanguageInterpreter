@@ -118,7 +118,7 @@ Token Tokenizer::getToken() {
     Token token;
     if (inStream.eof()) {
         dedent(token);
-        if (!token.isIndent() && !token.isDedent()) 
+        if (!token.isIndent() && !token.isDedent())
             token.eof() = true;
     }
     else if (c == '\n') {
@@ -163,14 +163,18 @@ Token Tokenizer::getToken() {
         token.symbol(c);
     else if (c == ':')
         token.symbol(c);
-    else if( c == '(' || c == ')')
+    else if (c == '(' || c == ')')
         token.symbol(c);
-    else if ( c == '{' )
-    	token.symbol(c);
-    else if ( c == '}' )
-    	token.symbol(c);
-   	else if ( c == ',' )
-   		token.symbol(c);
+    else if (c == '{')
+        token.symbol(c);
+    else if (c == '}')
+        token.symbol(c);
+    else if (c == ',')
+        token.symbol(c);
+    else if (c == ']')
+        token.symbol(c);
+    else if (c == '[')
+        token.symbol(c);
     else if ( c == '\"' || c == '\'')
     	token.setString( readString(c) );
     else if(isalpha(c)) {

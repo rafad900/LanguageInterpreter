@@ -53,17 +53,23 @@ class AssignmentStatement : public Statement {
 public:
     AssignmentStatement();
     // You need the variable (the thing before the equal sign) and the expression (the thing after the equal sign) 
-    AssignmentStatement(std::string lhsVar, ExprNode *rhsExpr);
+    AssignmentStatement(std::string lhsVar, int index, ExprNode *rhsExpr);
+	AssignmentStatement(std::string lhsVar, std::vector<ExprNode*> rhsExpr);
 	// Getters 
     std::string &lhsVariable();
-    ExprNode *&rhsExpression();
-	
+	int& index();
+	ExprNode *&rhsExpression();
+	std::vector<ExprNode*> array();
+
     virtual void evaluate(SymTab &symTab);
     virtual void print();
 	virtual ~AssignmentStatement();
+	
 
 	private:
+	int _index;
     std::string _lhsVariable;
+	std::vector<ExprNode*> _array;
     ExprNode *_rhsExpression;
 };
 

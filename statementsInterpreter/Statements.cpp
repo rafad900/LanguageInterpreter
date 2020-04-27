@@ -36,14 +36,23 @@ Statements::~Statements() {
 
 // AssignmentStatement
 
-AssignmentStatement::AssignmentStatement() : _lhsVariable{""}, _rhsExpression{nullptr} {}
+AssignmentStatement::AssignmentStatement() : _lhsVariable{ "" }, _index{ -1 }, _rhsExpression{ nullptr }, _array{ 0 } {}
 
-AssignmentStatement::AssignmentStatement(std::string lhsVar, ExprNode *rhsExpr):
-        _lhsVariable{lhsVar}, _rhsExpression{rhsExpr} {}
+AssignmentStatement::AssignmentStatement(std::string lhsVar, int index, ExprNode* rhsExpr) :
+	_lhsVariable{ lhsVar }, _rhsExpression{ rhsExpr }, _index{ index }, _array{ 0 } {}
+
+AssignmentStatement::AssignmentStatement(std::string lhsVar, std::vector<ExprNode *> rhsExpr): 
+	_lhsVariable{ lhsVar }, _rhsExpression{ nullptr }, _index{ -1 }, _array{ rhsExpr } {}
 
 void AssignmentStatement::evaluate(SymTab &symTab) {
+	if (_index != -1) {}
     TypeDescriptor *rhs = rhsExpression()->evaluate(symTab);
+	// Make sure to evaluate the stuff in the vecotr for the testlist when the rhsexpression is null
     symTab.setValueFor(lhsVariable(), rhs);
+}
+
+int& AssignmentStatement::index() {
+	return _index;
 }
 
 std::string &AssignmentStatement::lhsVariable() {
@@ -54,9 +63,26 @@ ExprNode *&AssignmentStatement::rhsExpression() {
     return _rhsExpression;
 }
 
+std::vector<ExprNode*> AssignmentStatement::array() {
+	return _array;
+}
+
 void AssignmentStatement::print() {
-    std::cout << _lhsVariable << " = ";
-    _rhsExpression->print();
+	std::cout << _lhsVariable << " = ";
+	if (_rhsExpression == nullptr) {
+		std::cout << "[";
+		int size = _array.size()-1;
+		for (int i = 0; i < size; i++) {
+			std::cout << "at least ones";
+			_array[i]->print();
+			std::cout << ",";
+		}
+		if (_array.size() > 0)
+			_array[_array.size() - 1]->print();
+		std::cout << "]";
+	}
+	else 
+		_rhsExpression->print();
 }
 
 AssignmentStatement::~AssignmentStatement() {

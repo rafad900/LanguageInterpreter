@@ -2,14 +2,16 @@
 #define TYPEDESCRIPTOR_HPP
 
 #include <string> 
+#include <vector>
+
+extern class ExprNode;
 
 class TypeDescriptor {
 public:
-	enum  types {BOOL, DOUBLE, STRING, INTEGER};
+	enum  types {BOOL, DOUBLE, STRING, INTEGER, ARRAY};
 	TypeDescriptor(types type);
 	types &type() { return _type; }
 	virtual void print() = 0;
-	virtual 
 	virtual ~TypeDescriptor();
 	
 private:
@@ -58,21 +60,18 @@ private:
 	std::string _value;
 };
 
-/*
- *
- *  THIS CLASS IS UNECESSARY AT THE MOMENT 
-class BooleanTypeDescriptor: public TypeDescriptor {
+class ArrDescriptor : public TypeDescriptor {
 public:
-	BooleanTypeDescriptor(std::string variableName, bool value);
-	BooleanTypeDescriptor(std::string variableName);
+	ArrDescriptor(std::string variableName, std::vector<ExprNode*> testlist);
+	ArrDescriptor(std::vector<ExprNode*> testlist);
 	std::string name();
-	bool boolValue();
-	virtual ~BooleanTypeDescriptor() {}
+	std::vector<ExprNode*> testlist();
+	virtual void print();
+	virtual ~ArrDescriptor();
 
 private:
 	std::string _name;
-	bool _value;
+	std::vector<ExprNode*> _list;
 };
-*/ 
 
 #endif

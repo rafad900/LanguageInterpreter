@@ -105,9 +105,42 @@ AssignmentStatement *Parser::assignStatement() {
     if (!varName.isName())
         die("Parser::assignStatement", "Expected a name token, instead got", varName);
 
+    bool isSubscription = false;
+    Token possibleBracket = tokenizer.getToken();
+    Token index;
+    if (possibleBracket.isOpenBracket()) {
+        isSubscription = true;
+        index = tokenizer.getToken();
+        possibleBracket = tokenizer.getToken();
+        if (!possibleBracket.isCloseBracket())
+            die("Parser::AssignmentStatement", "Expecting a closing square bracket, instead got", possibleBracket);
+    }
+    else {
+        tokenizer.ungetToken();
+    }
+
     Token assignOp = tokenizer.getToken();
     if (!assignOp.isAssignmentOperator())
         die("Parser::assignStatement", "Expected an equal sign, instead got", assignOp);
+
+    bool isTestList = false;
+    possibleBracket = tokenizer.getToken();
+    if (possibleBracket.isOpenBracket() && isSubscription == false) {
+        std::vector<ExprNode*> testlist;
+        Token test_token = tokenizer.getToken();
+        while (test_token.isString() || test_token.isName() || test_token.isComma() || test_token.isOpenParen() || test_token.isWholeNumber()) {
+            if (test_token.isComma()) {
+                test_token = tokenizer.getToken();
+                continue;
+            }
+            tokenizer.ungetToken();
+            testlist.push_back(test());	// MAKE ALL THE NEW EXPRESSION NODES AND SAVE THEM INTO THE VECTOR 
+            test_token = tokenizer.getToken();
+        }
+        if (!test_token.isCloseBracket())
+            die("Parser::AssignmentStatement", "Expected a closing bracket, instead got", possibleBracket);
+        return new AssignmentStatement(varName.getName(), testlist);
+    }
 	
 	// This begins a sort of recursive call down the grammar rules 
     ExprNode *rightHandSideExpr = test();
@@ -115,8 +148,12 @@ AssignmentStatement *Parser::assignStatement() {
     Token tok = tokenizer.getToken();
     if (!tok.eol()) 
     	die("Parser::assignStatement", "Expected an equal sign, instead got", tok);
+    
+    if (isSubscription) {
+        return new AssignmentStatement(varName.getName(), index.getWholeNumber(), rightHandSideExpr);
+    }
 
-    return new AssignmentStatement(varName.getName(), rightHandSideExpr);
+    return new AssignmentStatement(varName.getName(), -1, rightHandSideExpr);
 }
 
 ForStatement *Parser::forStatement() {
@@ -253,22 +290,26 @@ ExprNode *Parser::relExpr() {
     return left;
 }
 
-ExprNode *Parser::factor() {	
-	Token tok = tokenizer.getToken();
-	ExprNode *left;
-	if ( tok.isSubtractionOperator() ) {
-		Token op;
-		op.symbol('*');
-		Token l;
-		l.setWholeNumber(-1);
-		InfixExprNode *p = new InfixExprNode(op);
-		p->left() = new WholeNumber(l);
-		p->right() = factor();
-		left = p;
-	} else {
-		tokenizer.ungetToken();
-		left = primary();
-	}
+ExprNode* Parser::factor() {
+    Token tok = tokenizer.getToken();
+    ExprNode* left = nullptr;
+
+    if (!tok.isSubtractionOperator()) {
+        tokenizer.ungetToken();
+        left = primary(); 
+        left = subscription(left, tok);
+    }
+
+    if (tok.isSubtractionOperator()) {
+        Token op;
+        op.symbol('*');
+        Token l;
+        l.setWholeNumber(-1);
+        InfixExprNode* p = new InfixExprNode(op);
+        p->left() = new WholeNumber(l);
+        p->right() = factor();
+        left = p;
+    }
 	return left;
 }
 
@@ -296,9 +337,9 @@ ExprNode *Parser::primary() {
         return new WholeNumber(tok);
 	else if ( tok.isDouble() )
     	return new DoubleNumber(tok);
-    else if( tok.isName() )
+    else if (tok.isName()) 
         return new Variable(tok);
-    else if ( tok.isString() ) 
+    else if (tok.isString())
     	return new UserString(tok);
     else if (tok.isOpenParen()) {
         ExprNode *p = relExpr();
@@ -382,3 +423,22 @@ ExprNode* Parser::not_test() {
     }
     return left;
 }
+
+ExprNode* Parser::subscription(ExprNode *variable, Token tok) {
+    Token possibleBracket = tokenizer.getToken();
+    if (possibleBracket.isOpenBracket()) {
+        ExprNode* position = test();
+        Index* subscription = new Index(tok);
+        subscription->position() = position;
+        subscription->id() = variable;
+        possibleBracket = tokenizer.getToken();
+        if (!possibleBracket.isCloseBracket())
+            die("Parser::primary", "Expected a closing bracket instead got", possibleBracket);
+        return subscription;
+    }
+    else {
+        tokenizer.ungetToken();
+        return variable;
+    }
+}
+

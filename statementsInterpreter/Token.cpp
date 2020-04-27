@@ -5,7 +5,7 @@
 #include <iostream>
 #include "Token.hpp"
 
-Token::Token(): _isDouble{false}, _name{""}, _eof{false}, _eol{false}, _symbol{'\0'}, _isWholeNumber{false},
+Token::Token(): _isDouble{false}, _name{"\0"}, _eof{false}, _eol{false}, _symbol{'\0'}, _isWholeNumber{false},
     _relationalSymbol{"\0"}, _keyword{"\0"}, _string{"\0"}, _double{false}, _isIntDivisionOp{false},
     _wholeNumber{ false }, indent{ false }, dedent{ false } {}
 
@@ -45,5 +45,7 @@ void Token::print() const {
     else if (isOr()) std::cout << " or ";
     else if (isNot()) std::cout << " not ";
     else if (isColon()) std::cout << " : ";
+    else if (isOpenBracket()) std::cout << "[";
+    else if (isCloseBracket()) std::cout << "]";
     else std::cout << "Uninitialized token.\n";
 }

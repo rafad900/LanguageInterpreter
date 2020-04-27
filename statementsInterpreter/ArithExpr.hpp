@@ -85,4 +85,18 @@ public:
     virtual ~DoubleNumber();
 };
 
+class Index : public ExprNode {
+public:
+    Index(Token token);
+
+    ExprNode*& id();
+    ExprNode*& position();
+    virtual void print();
+    virtual TypeDescriptor* evaluate(SymTab& symTab);
+    virtual ~Index();
+
+private:
+    ExprNode *_id, *_position;
+};
+
 #endif //EXPRINTER_ARITHEXPR_HPP
