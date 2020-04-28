@@ -117,4 +117,17 @@ private:
 	std::vector<std::pair<ExprNode* , Statements*>> testSuites;
 };
 
+class ArrayStatement : public Statement {
+public:
+	ArrayStatement(ExprNode* test, std::string operation, std::string array);
+	virtual void evaluate(SymTab& symTab);
+	virtual void print();
+	virtual ~ArrayStatement();
+private:
+	std::string _array;
+	std::string _operation;
+	ExprNode* _test;
+
+};
+
 #endif //EXPRINTER_STATEMENTS_HPP

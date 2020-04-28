@@ -7,7 +7,7 @@
 
 Token::Token(): _isDouble{false}, _name{"\0"}, _eof{false}, _eol{false}, _symbol{'\0'}, _isWholeNumber{false},
     _relationalSymbol{"\0"}, _keyword{"\0"}, _string{"\0"}, _double{false}, _isIntDivisionOp{false},
-    _wholeNumber{ false }, indent{ false }, dedent{ false } {}
+    _wholeNumber{ false }, indent{ false }, dedent{ false }, _isFunction{ false } {}
 
 void Token::print() const {
     if (eol()) std::cout << "EOL\n";

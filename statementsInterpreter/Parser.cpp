@@ -18,16 +18,7 @@ void Parser::die(std::string where, std::string message, Token &token) {
 }
 
 Statements *Parser::statements() {
-    // This function is called when we KNOW that we are about to parse
-    // a series of assignment statements.
 
-    // This function parses the grammar rules:
-
-    // <statement> -> <assignStatement> <statement> 
-    // <statement> -> Epsilon
-
-	// This does not grab tokens by themselves, it checks if its a name, and if it is then it will grab the whole line I assume
-	// The assignStatement is one that actually grabs each of the tokens individually and gives them to the assingStmt object
     Statements *stmts = new Statements();
     Token tok = tokenizer.getToken();
     while (tok.isName() || tok.eol()) {
@@ -60,13 +51,20 @@ Statements *Parser::statements() {
                 tokenizer.ungetToken();
                 break;
             }
-    	} else {
+    	}
+        else if (tok.isName() && tok.isFunction()) {
+            tokenizer.getToken();
+            ArrayStatement* arrayStmt = arrayStatement();
+            stmts->addStatement(arrayStmt);
+            tok = tokenizer.getToken();
+        }
+        else if (tok.isName()) {
     		//std::cout << "It has read assignement\n";
 			tokenizer.ungetToken();
 			AssignmentStatement *assignStmt = assignStatement();
 			stmts->addStatement(assignStmt);
 			tok = tokenizer.getToken();
-		}
+        }
     }
     tokenizer.ungetToken();
     return stmts;
@@ -128,7 +126,7 @@ AssignmentStatement *Parser::assignStatement() {
     if (possibleBracket.isOpenBracket() && isSubscription == false) {
         std::vector<ExprNode*> testlist;
         Token test_token = tokenizer.getToken();
-        while (test_token.isString() || test_token.isName() || test_token.isComma() || test_token.isOpenParen() || test_token.isWholeNumber()) {
+        while (test_token.isString() || test_token.isName() || test_token.isComma() || test_token.isOpenParen() || test_token.isWholeNumber() || test_token.isDouble()) {
             if (test_token.isComma()) {
                 test_token = tokenizer.getToken();
                 continue;
@@ -141,7 +139,7 @@ AssignmentStatement *Parser::assignStatement() {
             die("Parser::AssignmentStatement", "Expected a closing bracket, instead got", possibleBracket);
         return new AssignmentStatement(varName.getName(), testlist);
     }
-	
+    tokenizer.ungetToken();
 	// This begins a sort of recursive call down the grammar rules 
     ExprNode *rightHandSideExpr = test();
     // I removed the check for the semicolon and call the die function 
@@ -260,6 +258,33 @@ IfStatement* Parser::ifStatement() {
     }
 
     return ifStatements;
+}
+
+ArrayStatement* Parser::arrayStatement() {
+    Token varName = tokenizer.getToken();
+    if (!varName.isName())
+        die("Parser::ArrayStatement", "Expected a variable name, instead got: ", varName);
+
+    Token dotNote = tokenizer.getToken();
+    if (!dotNote.isPeriod())
+        die("Parser::ArrayStatement", "Expected a period, instead got: ", dotNote);
+
+    Token function = tokenizer.getToken();
+    if (!function.isKeyword)
+        die("Parser::ArrayStatement", "Expected an array operation, instead got: ", function);
+
+    Token openParentheses = tokenizer.getToken();
+    if (!openParentheses.isOpenParen())
+        die("Parser::ArrayStatement", "Expected an open parentheses, instead got: ", openParentheses);
+
+    ExprNode* _test = test();
+    
+    Token closeParentheses = tokenizer.getToken();
+    if (!closeParentheses.isCloseParen())
+        die("Parser::ArrayStatement", "Expected a closed paretheses, instead got: ", closeParentheses);
+
+    return new ArrayStatement()
+
 }
 
 ExprNode *Parser::expr() {

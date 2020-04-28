@@ -13,6 +13,7 @@
 // initialized, determines if a give variable has been defined or not, and if
 // a variable has been defined, it returns its value.
 
+
 class SymTab {
 public:
     void setValueFor(std::string vName, TypeDescriptor *td);

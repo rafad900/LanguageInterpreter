@@ -4,11 +4,9 @@
 #include <string> 
 #include <vector>
 
-extern class ExprNode;
-
 class TypeDescriptor {
 public:
-	enum  types {BOOL, DOUBLE, STRING, INTEGER, ARRAY};
+	enum  types { DOUBLE, STRING, INTEGER, ARRAY};
 	TypeDescriptor(types type);
 	types &type() { return _type; }
 	virtual void print() = 0;
@@ -62,16 +60,17 @@ private:
 
 class ArrDescriptor : public TypeDescriptor {
 public:
-	ArrDescriptor(std::string variableName, std::vector<ExprNode*> testlist);
-	ArrDescriptor(std::vector<ExprNode*> testlist);
+	ArrDescriptor(std::string variableName, std::vector<TypeDescriptor*> testlist);
+	ArrDescriptor(std::vector<TypeDescriptor*> testlist);
 	std::string name();
-	std::vector<ExprNode*> testlist();
+	std::vector<TypeDescriptor*> &testlist();
+	void testlistCopy(std::vector<TypeDescriptor*> &copy);
 	virtual void print();
 	virtual ~ArrDescriptor();
 
 private:
 	std::string _name;
-	std::vector<ExprNode*> _list;
+	std::vector<TypeDescriptor*> _list;
 };
 
 #endif

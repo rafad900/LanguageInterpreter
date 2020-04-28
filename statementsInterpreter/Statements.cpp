@@ -45,10 +45,41 @@ AssignmentStatement::AssignmentStatement(std::string lhsVar, std::vector<ExprNod
 	_lhsVariable{ lhsVar }, _rhsExpression{ nullptr }, _index{ -1 }, _array{ rhsExpr } {}
 
 void AssignmentStatement::evaluate(SymTab &symTab) {
-	if (_index != -1) {}
-    TypeDescriptor *rhs = rhsExpression()->evaluate(symTab);
-	// Make sure to evaluate the stuff in the vecotr for the testlist when the rhsexpression is null
-    symTab.setValueFor(lhsVariable(), rhs);
+
+	if (_index != -1) {
+		TypeDescriptor* array = symTab.getValueFor(lhsVariable());
+		if (array->type() != TypeDescriptor::ARRAY) {
+			std::cout << "\nThe variable " << lhsVariable() << " does not hold an array.";
+			exit(0);
+		}
+		ArrDescriptor* arrayDes = dynamic_cast<ArrDescriptor*>(array);
+		arrayDes->testlist()[_index] = rhsExpression()->evaluate(symTab);
+	}
+	else if (rhsExpression() == nullptr) {
+		std::vector<TypeDescriptor*> testlist;
+		TypeDescriptor::types type;
+		type = _array[0]->evaluate(symTab)->type();
+		for (int i = 0; i < (int)_array.size(); i++) {
+			TypeDescriptor* value = _array[i]->evaluate(symTab);
+			if (type != value->type()) {
+				std::cout << "The types of a list must be the same";
+				exit(1);
+			}
+			testlist.push_back(value);
+		}
+		symTab.setValueFor(lhsVariable(), new ArrDescriptor(testlist));
+	}
+	else {
+		TypeDescriptor* rhs = rhsExpression()->evaluate(symTab);
+		if (rhs->type() == TypeDescriptor::ARRAY) {
+			std::vector<TypeDescriptor*> copy;
+			dynamic_cast<ArrDescriptor*>(rhs)->testlistCopy(copy);
+			rhs = new ArrDescriptor(copy);
+			symTab.setValueFor(lhsVariable(), rhs);
+		} 
+		else
+			symTab.setValueFor(lhsVariable(), rhs);
+	}
 }
 
 int& AssignmentStatement::index() {
@@ -68,12 +99,15 @@ std::vector<ExprNode*> AssignmentStatement::array() {
 }
 
 void AssignmentStatement::print() {
-	std::cout << _lhsVariable << " = ";
+	if (_index != -1)
+		std::cout << _lhsVariable << "[" << _index << "] = ";
+	else
+		std::cout << _lhsVariable << " = ";
+
 	if (_rhsExpression == nullptr) {
-		std::cout << "[";
+		std::cout << "[";				// THIS CODE BELONDS INSIDE THE ARRAY TYPE DESCRIPTOR
 		int size = _array.size()-1;
 		for (int i = 0; i < size; i++) {
-			std::cout << "at least ones";
 			_array[i]->print();
 			std::cout << ",";
 		}
@@ -103,12 +137,14 @@ void PrintStatement::evaluate(SymTab &symTab) {
 	for (ExprNode *e: _testlist) {
 		if (e->token().isName()) {
 			TypeDescriptor *parent = symTab.getValueFor(e->token().getName());
-			if (parent->type() == TypeDescriptor::INTEGER) 
-				std::cout << dynamic_cast<IntDescriptor *>(parent)->intValue();
+			if (parent->type() == TypeDescriptor::INTEGER)
+				std::cout << dynamic_cast<IntDescriptor*>(parent)->intValue();
 			else if (parent->type() == TypeDescriptor::DOUBLE)
-				std::cout << dynamic_cast<DblDescriptor *>(parent)->doubleValue();
-			else 
-				std::cout << "\"" << dynamic_cast<StrDescriptor *>(parent)->stringValue() << "\"";;
+				std::cout << dynamic_cast<DblDescriptor*>(parent)->doubleValue();
+			else if (parent->type() == TypeDescriptor::STRING)
+				std::cout << "\"" << dynamic_cast<StrDescriptor*>(parent)->stringValue() << "\"";
+			else if (parent->type() == TypeDescriptor::ARRAY)
+				dynamic_cast<ArrDescriptor*>(parent)->print(); std::cout << std::endl;
 			std::cout << " ";
 			if (!symTab.isDefined(parent))
 				delete parent;
@@ -211,6 +247,7 @@ ForStatement::~ForStatement() {
 	parameters.clear();
 }
 
+// IF Statement 
 IfStatement::IfStatement() : testSuites{ 0 } {}
 
 void IfStatement::evaluate(SymTab &symTab) {
@@ -248,3 +285,41 @@ IfStatement::~IfStatement() {
 	}
 	testSuites.clear();
 }
+
+// Array Statement 
+ArrayStatement::ArrayStatement(ExprNode* test, std::string operation, std::string array) : _array{ array }, _operation{ operation }, _test{ test } {}
+
+void ArrayStatement::evaluate(SymTab& symTab) {
+	if (_operation == "append") {
+		if (symTab.isDefined(_array)) {
+			if (symTab.getValueFor(_array)->type() != TypeDescriptor::ARRAY) {
+				std::cout << "\nVariable: " << _array << " is not an array";
+				exit(1);
+			}
+			dynamic_cast<ArrDescriptor*>(symTab.getValueFor(_array))->testlist().push_back(_test->evaluate(symTab));
+		}
+	}
+	else if (_operation == "pop") {
+		if (symTab.isDefined(_array)) {
+			if (symTab.getValueFor(_array)->type() != TypeDescriptor::ARRAY) {
+				std::cout << "\nVariable: " << _array << " is not an array";
+				exit(1);
+			}
+			dynamic_cast<ArrDescriptor*>(symTab.getValueFor(_array))->testlist().pop_back();
+		}
+	}
+	else {
+		std::cout << "\nOperation not supported on arrays: " << _operation << std::endl;
+	}
+}
+
+void ArrayStatement::print() {
+	std::cout << _array << "." << _operation << "(";
+	_test->print();
+	std::cout << ")";
+}
+
+ArrayStatement::~ArrayStatement() {
+	delete _test;
+}
+

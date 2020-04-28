@@ -183,7 +183,18 @@ void Index::print() {
 }
 
 TypeDescriptor* Index::evaluate(SymTab& symTab) {
-    return new DblDescriptor(0);
+    std::vector<TypeDescriptor*> array;
+
+    if (symTab.isDefined(token().getName()))
+        dynamic_cast<ArrDescriptor*>(symTab.getValueFor(token().getName()))->testlistCopy(array);
+
+    if (_position->evaluate(symTab)->type() != TypeDescriptor::INTEGER) {
+        std::cout << "\nThe index has to be the interger\n" << std::endl;
+        exit(1);
+    }
+
+    int position = dynamic_cast<IntDescriptor*>( _position->evaluate(symTab))->intValue();
+    return array[position];
 }
 
 Index::~Index() {}

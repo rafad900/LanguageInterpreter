@@ -24,6 +24,7 @@ public:
     PrintStatement *printStatement();
     ForStatement *forStatement();
     IfStatement* ifStatement();
+    ArrayStatement* arrayStatement();
 
     ExprNode *expr();
     ExprNode *term();

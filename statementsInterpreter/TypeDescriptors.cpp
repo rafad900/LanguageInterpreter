@@ -95,26 +95,42 @@ void StrDescriptor::print() {
 }
 
 // Array type Descriptor
-ArrDescriptor::ArrDescriptor(std::string variableName, std::vector<ExprNode*> testlist): 
+ArrDescriptor::ArrDescriptor(std::string variableName, std::vector<TypeDescriptor*> testlist): 
 	TypeDescriptor(TypeDescriptor::ARRAY), _name{ variableName }, _list{ testlist } {}
 
-ArrDescriptor::ArrDescriptor(std::vector<ExprNode*> testlist) :
+ArrDescriptor::ArrDescriptor(std::vector<TypeDescriptor*> testlist) :
 	TypeDescriptor(TypeDescriptor::ARRAY), _list{ testlist } {}
 
 std::string ArrDescriptor::name() {
 	return _name;
 }
 
-std::vector<ExprNode*> ArrDescriptor::testlist() {
+std::vector<TypeDescriptor*> &ArrDescriptor::testlist() {
 	return _list;
+}
+
+void ArrDescriptor::testlistCopy(std::vector<TypeDescriptor*> &copy) {
+	for (int i = 0; i < _list.size(); i++) {
+		if (_list[i]->type() == TypeDescriptor::INTEGER) {
+			copy.push_back(new IntDescriptor(dynamic_cast<IntDescriptor*>(_list[i])->intValue()));
+		}
+		else if (_list[i]->type() == TypeDescriptor::STRING) {
+			copy.push_back(new StrDescriptor(dynamic_cast<StrDescriptor*>(_list[i])->stringValue()));
+		}
+		else if (_list[i]->type() == TypeDescriptor::DOUBLE) {
+			copy.push_back(new DblDescriptor( dynamic_cast<DblDescriptor*>(_list[i])->doubleValue()));
+		}
+	}
 }
 
 void ArrDescriptor::print() {
 	std::cout << "[";
 	for (int i = 0; i < _list.size()-1; i++) {
-		std::cout << _list[i] << ",";
+		_list[i]->print(); std::cout << ",";
 	}
-	std::cout << _list[_list.size()-1] << "]";
+	if (_list.size() > 0)
+		_list[_list.size() - 1]->print();
+	std::cout << "]";
 }
 
 ArrDescriptor::~ArrDescriptor() {
@@ -122,6 +138,7 @@ ArrDescriptor::~ArrDescriptor() {
 		delete _list[i];
 	}
 	_list.clear();
+	_list.push_back(NULL);
 }
 
 

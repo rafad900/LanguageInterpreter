@@ -4,20 +4,26 @@
 
 #include <iostream>
 #include "SymTab.hpp"
+#include <exception>
 
-void SymTab::setValueFor(std::string vName, TypeDescriptor *td) {
-    // Define a variable by setting its initial value.
-    if (isDefined(vName)) {
-    	delete getValueFor(vName);
-    }
+void SymTab::setValueFor(std::string vName, TypeDescriptor* td) {
+	// Define a variable by setting its initial value.
+	if (isDefined(vName)) {
+		delete getValueFor(vName);
+	}
 	if (td->type() == TypeDescriptor::INTEGER) {
 		std::cout << vName << " <- " << dynamic_cast<IntDescriptor*>(td)->intValue() << std::endl;
-	} else if (td->type() == TypeDescriptor::STRING) {
+	}
+	else if (td->type() == TypeDescriptor::STRING) {
 		std::cout << vName << " <- " << "\"" << dynamic_cast<StrDescriptor*>(td)->stringValue() << "\"" << std::endl;
-	} else if (td->type() == TypeDescriptor::DOUBLE) {
+	}
+	else if (td->type() == TypeDescriptor::DOUBLE) {
 		std::cout << vName << " <- " << dynamic_cast<DblDescriptor*>(td)->doubleValue() << std::endl;
 	}
-    symTab[vName] = td;
+	else if (td->type() == TypeDescriptor::ARRAY) {
+		std::cout << vName << " <- "; dynamic_cast<ArrDescriptor*>(td)->print(); std::cout << std::endl;
+	}
+	symTab[vName] = td;
 }
 
 bool SymTab::isDefined(std::string vName) {
@@ -44,7 +50,11 @@ TypeDescriptor* SymTab::getValueFor(std::string vName) {
 	} else if (symTab.find(vName)->second->type() == TypeDescriptor::DOUBLE) {
 	  	std::cout << "SymTab::getValueFor: " << vName << " contains " << dynamic_cast<DblDescriptor*>(symTab.find(vName)->second)->doubleValue() << std::endl;
 	    return dynamic_cast<DblDescriptor*>(symTab.find(vName)->second);
-	}	
+	}
+	else if (symTab.find(vName)->second->type() == TypeDescriptor::ARRAY) {
+		std::cout << "SymTab::getValueFor: " << vName << " contains "; dynamic_cast<ArrDescriptor*>(symTab.find(vName)->second)->print(); std::cout << std::endl;
+		return dynamic_cast<ArrDescriptor*>(symTab.find(vName)->second);
+	}
 	return nullptr;	
 }
 
@@ -57,14 +67,17 @@ void SymTab::print() {
 		} else if (value->type() == TypeDescriptor::DOUBLE) {
 			std::cout << var << " = " << dynamic_cast<DblDescriptor*>(value)->doubleValue() << std::endl;
 		}
+		else if (value->type() == TypeDescriptor::ARRAY) {
+			dynamic_cast<ArrDescriptor*>(value)->print(); std::cout << std::endl;
+		}
     }
 }
 
 void SymTab::delete_descriptors() {
-	std::map<std::string, TypeDescriptor *>::iterator it = symTab.begin();
-	while (it != symTab.end()) {
-		TypeDescriptor * value = it->second;
-		delete value;
-		it++;
+	for (auto it = symTab.begin(); it != symTab.end(); ++it) {
+		if (it->second)
+			delete it->second;
+		it->second = NULL;
 	}
+
 }
