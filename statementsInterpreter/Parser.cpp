@@ -53,13 +53,14 @@ Statements *Parser::statements() {
             }
     	}
         else if (tok.isName() && tok.isFunction()) {
-            tokenizer.getToken();
+            std::cout << "It has read an array statement";
+            tokenizer.ungetToken();
             ArrayStatement* arrayStmt = arrayStatement();
             stmts->addStatement(arrayStmt);
             tok = tokenizer.getToken();
         }
         else if (tok.isName()) {
-    		//std::cout << "It has read assignement\n";
+    		std::cout << "It has read assignement\n";
 			tokenizer.ungetToken();
 			AssignmentStatement *assignStmt = assignStatement();
 			stmts->addStatement(assignStmt);
@@ -270,21 +271,22 @@ ArrayStatement* Parser::arrayStatement() {
         die("Parser::ArrayStatement", "Expected a period, instead got: ", dotNote);
 
     Token function = tokenizer.getToken();
-    if (!function.isKeyword)
+    if (!function.isKeyword())
         die("Parser::ArrayStatement", "Expected an array operation, instead got: ", function);
 
     Token openParentheses = tokenizer.getToken();
     if (!openParentheses.isOpenParen())
         die("Parser::ArrayStatement", "Expected an open parentheses, instead got: ", openParentheses);
 
-    ExprNode* _test = test();
+    ExprNode* _test = nullptr;
+    if (function.getName() == "append")
+        _test = test();
     
     Token closeParentheses = tokenizer.getToken();
     if (!closeParentheses.isCloseParen())
         die("Parser::ArrayStatement", "Expected a closed paretheses, instead got: ", closeParentheses);
 
-    return new ArrayStatement()
-
+    return new ArrayStatement(_test, function.getName(), varName.getName());
 }
 
 ExprNode *Parser::expr() {

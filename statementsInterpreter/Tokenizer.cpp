@@ -130,7 +130,7 @@ Token Tokenizer::getToken() {
         if (!token.isIndent() && !token.isDedent())
             token.eol() = true;
     }
-    else if (isdigit(c) || c == '.') {
+    else if (isdigit(c) || (c == '.' && isdigit(inStream.peek()))) {
         inStream.putback(c);
         std::string pre = readNumber();
         if (isDouble(pre)) {
@@ -159,6 +159,8 @@ Token Tokenizer::getToken() {
             token.symbol(c);
         }
     }
+    else if (c == '.')
+        token.symbol(c);
     else if (c == ';')
         token.symbol(c);
     else if (c == ':')
@@ -183,8 +185,11 @@ Token Tokenizer::getToken() {
             indent(token);
             dedent(token);
         }
-        if (!token.isDedent() && !token.isIndent())
-            token.setName( readName() );
+        if (!token.isDedent() && !token.isIndent()) {
+            token.setName(readName());
+            if (inStream.peek() == '.')
+                token.setFunction() = true;
+        }
    	} else if( c == '>' || c == '<') {
    		if (inStream.peek() == '=') {
    			inStream.get(t);

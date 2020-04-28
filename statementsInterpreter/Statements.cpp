@@ -296,6 +296,9 @@ void ArrayStatement::evaluate(SymTab& symTab) {
 				std::cout << "\nVariable: " << _array << " is not an array";
 				exit(1);
 			}
+			if (dynamic_cast<ArrDescriptor*>(symTab.getValueFor(_array))->type() != _test->evaluate(symTab)->type()) {
+				std::cout << "\nYou cannot append an element of a different type to the elements within the array\n";
+			}
 			dynamic_cast<ArrDescriptor*>(symTab.getValueFor(_array))->testlist().push_back(_test->evaluate(symTab));
 		}
 	}
@@ -315,7 +318,8 @@ void ArrayStatement::evaluate(SymTab& symTab) {
 
 void ArrayStatement::print() {
 	std::cout << _array << "." << _operation << "(";
-	_test->print();
+	if (_test != nullptr)
+		_test->print();
 	std::cout << ")";
 }
 

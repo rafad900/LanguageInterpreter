@@ -47,5 +47,6 @@ void Token::print() const {
     else if (isColon()) std::cout << " : ";
     else if (isOpenBracket()) std::cout << "[";
     else if (isCloseBracket()) std::cout << "]";
+    else if (isPeriod()) std::cout << ".";
     else std::cout << "Uninitialized token.\n";
 }
