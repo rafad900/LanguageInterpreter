@@ -179,7 +179,7 @@ ForStatement *Parser::forStatement() {
 
     std::vector<ExprNode*> testlist;
     Token test_token = tokenizer.getToken();
-    while (test_token.isString() || test_token.isName() || test_token.isComma() || test_token.isOpenParen() || test_token.isWholeNumber()) {
+    while (test_token.isString() || test_token.isName() || test_token.isComma() || test_token.isOpenParen() || test_token.isWholeNumber() || test_token.isDouble()) {
         if (test_token.isComma()) {
             test_token = tokenizer.getToken();
             continue;
@@ -289,6 +289,47 @@ ArrayStatement* Parser::arrayStatement() {
     return new ArrayStatement(_test, function.getName(), varName.getName());
 }
 
+FunctionStatement* Parser::functionStatement() {
+    Token def = tokenizer.getToken();
+    if (!def.isdef())
+        die("Parser::functionStatement", "def keyword expected, instead got", def);
+
+    Token varName = tokenizer.getToken();
+    if (!varName.isName())
+        die("Parser::functionStatement", "Expected a variable name, instead got", varName);
+
+    Token openParen = tokenizer.getToken();
+    if (!openParen.isOpenParen())
+        die("Parser::functionStatement", "Expected an open paretheses, instead got", openParen);
+
+    std::vector<ExprNode*> params;
+    Token test_token = tokenizer.getToken();
+    while ( test_token.isName() || test_token.isComma() || test_token.isOpenParen()) {
+        if (test_token.isComma()) {
+            test_token = tokenizer.getToken();
+            continue;
+        }
+        tokenizer.ungetToken();
+        params.push_back(test());	// MAKE ALL THE NEW EXPRESSION NODES AND SAVE THEM INTO THE VECTOR 
+        test_token = tokenizer.getToken();
+    }
+
+    tokenizer.ungetToken();
+
+    Token closeParen = tokenizer.getToken();
+    if (!closeParen.isCloseParen())
+        die("Parser::functionStatement", "Expected a closing parentheses, instead got", closeParen);
+
+    Token colon = tokenizer.getToken();
+    if (!colon.isColon())
+        die("Parser::functionStatement", "Expected a colon, instead got", colon);
+
+    Statements* stms = suite();
+
+    return new FunctionStatement(params, stms);
+
+}
+
 ExprNode *Parser::expr() {
     ExprNode *left = term();
     Token tok = tokenizer.getToken();
@@ -360,12 +401,15 @@ ExprNode *Parser::primary() {
 
     Token tok = tokenizer.getToken();
 
-    if (tok.isWholeNumber() )
+    if (tok.isWholeNumber())
         return new WholeNumber(tok);
-	else if ( tok.isDouble() )
-    	return new DoubleNumber(tok);
-    else if (tok.isName()) 
+    else if (tok.isDouble())
+        return new DoubleNumber(tok);
+    else if (tok.isName()) {                 // Add the subscription logic here 
+        if (tok.isLen())
+            return lenOperation();
         return new Variable(tok);
+    }
     else if (tok.isString())
     	return new UserString(tok);
     else if (tok.isOpenParen()) {
@@ -469,3 +513,19 @@ ExprNode* Parser::subscription(ExprNode *variable, Token tok) {
     }
 }
 
+ExprNode* Parser::lenOperation() {
+
+    Token openParen = tokenizer.getToken();
+    if (!openParen.isOpenParen())
+        die("Parser::LenOperation", "Expected an open parentheses, instead got", openParen);
+    
+    Token varName = tokenizer.getToken();
+    if (!varName.isName())
+        die("Parser::LenOPeration", "Expected an array variable name, instead got", varName);
+
+    Token closeParen = tokenizer.getToken();
+    if (!closeParen.isCloseParen())
+        die("Parser::LenOPeration", "Expected a closing parentheses, instead got", closeParen);
+
+    return new Len(varName);
+}

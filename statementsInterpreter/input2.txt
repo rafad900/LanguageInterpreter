@@ -4,3 +4,5 @@ c.append(3.2)
 c.append(9.8)
 c.pop()
 print c
+
+a = len(c)

@@ -25,13 +25,12 @@ public:
     ForStatement *forStatement();
     IfStatement* ifStatement();
     ArrayStatement* arrayStatement();
+    FunctionStatement* functionStatement();
 
     ExprNode *expr();
     ExprNode *term();
     ExprNode *primary();
 	ExprNode *relExpr();
-	ExprNode *relTerm();
-	ExprNode *relPrimary();
 	ExprNode *factor();
     ExprNode *test();
     ExprNode *testlist();
@@ -39,6 +38,7 @@ public:
     ExprNode* and_test();
     ExprNode* not_test();
     ExprNode* subscription(ExprNode* variable, Token tok);
+    ExprNode* lenOperation();
 
 private:
     Tokenizer &tokenizer;

@@ -99,4 +99,12 @@ private:
     ExprNode *_id, *_position;
 };
 
+class Len : public ExprNode {
+public:
+    Len(Token token);
+    virtual void print();
+    virtual TypeDescriptor* evaluate(SymTab& symTab);
+    virtual ~Len();
+};
+
 #endif //EXPRINTER_ARITHEXPR_HPP

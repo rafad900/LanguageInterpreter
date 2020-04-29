@@ -199,3 +199,22 @@ TypeDescriptor* Index::evaluate(SymTab& symTab) {
 
 Index::~Index() {}
 
+// Len Class
+Len::Len(Token token) : ExprNode(token) {}
+
+void Len::print() {
+    std::cout << "Len(" << token().getName() << ")";
+}
+
+TypeDescriptor* Len::evaluate(SymTab &symTab) {
+    if (symTab.getValueFor(token().getName())->type() == TypeDescriptor::ARRAY) {
+        int length = dynamic_cast<ArrDescriptor*>(symTab.getValueFor(token().getName()))->testlist().size();
+        return new IntDescriptor(length);
+    }
+    else {
+        std::cout << "The variable name: " << token().getName() << " is not a name for an array.";
+        exit(1);
+    }
+}
+
+Len::~Len() {}

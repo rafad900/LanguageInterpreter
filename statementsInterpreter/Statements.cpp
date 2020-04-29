@@ -26,6 +26,7 @@ void Statements::print() {
 void Statements::evaluate(SymTab &symTab) {
     for (auto s: _statements)
         s->evaluate(symTab);
+		
 }
 
 Statements::~Statements() {
@@ -327,3 +328,24 @@ ArrayStatement::~ArrayStatement() {
 	delete _test;
 }
 
+
+// Function definition
+FunctionStatement::FunctionStatement(std::vector<ExprNode*> params, std::vector<Statement*> suite) : _params{ params }, _suite{ suite } {}
+
+void FunctionStatement::evaluate(SymTab& symTab) {
+	// I NEED MORE STUFF HERE LIKE SCOPE OF THE VARIABLES BEING USED IN THE SUITE
+	for (int i = 0; i < _suite.size(); i++) {
+		_suite[i]->evaluate(symTab);
+	}
+}
+
+FunctionStatement::~FunctionStatement() {
+	for (int i = 0; i < _params.size(); i++) {
+		delete _params[i];
+	}
+	for (int i = 0; i < _suite.size(); i++) {
+		delete _suite[i];
+	}
+	_params.clear();
+	_suite.clear();
+}

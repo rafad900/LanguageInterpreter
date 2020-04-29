@@ -46,13 +46,16 @@ public:
 
     bool isKeyword() const { return _name == "print" || _name == "for" || _name == "in" || _name == "range" || 
                                     _name == "and" || _name == "or" || _name == "not" || _name == "if"||
-                                    _name == "else" || _name == "elif" || _name == "pop" || _name == "append"; }
+                                    _name == "else" || _name == "elif" || _name == "pop" || _name == "append" ||
+                                    _name == "def"; }
+    bool isLen() const { return _name == "len"; }
     bool isAnd() const { return _name == "and"; }
     bool isOr() const { return _name == "or"; }
     bool isNot() const { return _name == "not"; }
     bool isIn() const { return _name == "in"; }
     bool isRange() const { return _name == "range"; }
     bool isPrint() const { return _name == "print"; }
+    bool isdef() const { return _name == "def"; }
     bool isFor() const { return _name == "for"; }
     bool isIf() const { return _name == "if"; }
     bool isElif() const { return _name == "elif"; }

@@ -130,4 +130,16 @@ private:
 
 };
 
+class FunctionStatement : public Statement {
+public:
+	FunctionStatement(std::vector<ExprNode*> params, std::vector<Statement*> suite);
+	virtual void evaluate(SymTab& SymTab);
+	virtual void print();
+	virtual ~FunctionStatement();
+
+private:
+	std::vector<ExprNode*> _params;
+	std::vector<Statement*> _suite;
+};
+
 #endif //EXPRINTER_STATEMENTS_HPP

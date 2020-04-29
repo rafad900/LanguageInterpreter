@@ -126,7 +126,7 @@ void ArrDescriptor::testlistCopy(std::vector<TypeDescriptor*> &copy) {
 void ArrDescriptor::print() {
 	std::cout << "[";
 	for (int i = 0; i < _list.size()-1; i++) {
-		_list[i]->print(); std::cout << ",";
+		_list[i]->print(); std::cout << ", ";
 	}
 	if (_list.size() > 0)
 		_list[_list.size() - 1]->print();
