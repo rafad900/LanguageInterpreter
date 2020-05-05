@@ -4,9 +4,11 @@
 #include <string> 
 #include <vector>
 
+extern class Statement;
+
 class TypeDescriptor {
 public:
-	enum  types { DOUBLE, STRING, INTEGER, ARRAY};
+	enum  types { DOUBLE, STRING, INTEGER, ARRAY, FUNC};
 	TypeDescriptor(types type);
 	types &type() { return _type; }
 	virtual void print() = 0;
@@ -71,6 +73,18 @@ public:
 private:
 	std::string _name;
 	std::vector<TypeDescriptor*> _list;
+};
+
+class FunDescriptor : public TypeDescriptor {
+public:
+	FunDescriptor(std::string funcName, Statement* function);
+	FunDescriptor(Statement* function);
+	Statement*& function();
+	virtual void print();
+	virtual ~FunDescriptor();
+private:
+	Statement* _function;
+	std::string _funcName;
 };
 
 #endif

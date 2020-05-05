@@ -141,6 +141,20 @@ ArrDescriptor::~ArrDescriptor() {
 	_list.push_back(NULL);
 }
 
+// Function Descriptor 
+FunDescriptor::FunDescriptor(Statement* function) : TypeDescriptor(TypeDescriptor::FUNC), _function{ function } {}
+
+Statement*& FunDescriptor::function() {
+	return _function;
+}
+
+void FunDescriptor::print() {
+	std::cout << _funcName << " contains a function type\n";
+}
+
+FunDescriptor::~FunDescriptor() {
+	delete _function;
+}
 
 /* Type Descriptor operations:
  * These provide the type checking and the functionality 

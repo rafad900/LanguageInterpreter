@@ -8,7 +8,6 @@
 #include <iostream>
 #include <vector>
 #include <utility>
-
 #include "ArithExpr.hpp"
 #include "SymTab.hpp"
 
@@ -132,14 +131,15 @@ private:
 
 class FunctionStatement : public Statement {
 public:
-	FunctionStatement(std::vector<ExprNode*> params, std::vector<Statement*> suite);
+	FunctionStatement(std::string varName, std::vector<ExprNode*> params, Statements* suite);
 	virtual void evaluate(SymTab& SymTab);
 	virtual void print();
 	virtual ~FunctionStatement();
 
 private:
+	std::string _funcName;
 	std::vector<ExprNode*> _params;
-	std::vector<Statement*> _suite;
+	Statements* _suite;
 };
 
 #endif //EXPRINTER_STATEMENTS_HPP

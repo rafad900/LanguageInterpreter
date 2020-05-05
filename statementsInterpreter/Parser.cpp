@@ -326,8 +326,8 @@ FunctionStatement* Parser::functionStatement() {
 
     Statements* stms = suite();
 
-    return new FunctionStatement(params, stms);
 
+    return new FunctionStatement(varName.getName, params, suite);
 }
 
 ExprNode *Parser::expr() {

@@ -330,22 +330,18 @@ ArrayStatement::~ArrayStatement() {
 
 
 // Function definition
-FunctionStatement::FunctionStatement(std::vector<ExprNode*> params, std::vector<Statement*> suite) : _params{ params }, _suite{ suite } {}
+FunctionStatement::FunctionStatement(std::string varName, std::vector<ExprNode*> params, Statements* suite) : _funcName{ varName }, _params { params }, _suite{ suite } {}
 
 void FunctionStatement::evaluate(SymTab& symTab) {
-	// I NEED MORE STUFF HERE LIKE SCOPE OF THE VARIABLES BEING USED IN THE SUITE
-	for (int i = 0; i < _suite.size(); i++) {
-		_suite[i]->evaluate(symTab);
-	}
+
+	//_suite->evaluate(symTab); Generally I won't call evaluate here because I don't want it to run when I read it, only when I call it
 }
 
 FunctionStatement::~FunctionStatement() {
 	for (int i = 0; i < _params.size(); i++) {
 		delete _params[i];
 	}
-	for (int i = 0; i < _suite.size(); i++) {
-		delete _suite[i];
-	}
+	
 	_params.clear();
-	_suite.clear();
+	delete _suite;
 }
