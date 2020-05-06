@@ -89,10 +89,10 @@ TypeDescriptor* InfixExprNode::evaluate(SymTab &symTab) {
         std::cout << std::endl;
         exit(2);
     }
-    if (!symTab.isDefined(rValue))
+    /*if (!symTab.isDefined(rValue))
         delete rValue;
     if (!symTab.isDefined(lValue))
-        delete lValue;
+        delete lValue;*/
     return res;
 }
 
@@ -255,8 +255,13 @@ TypeDescriptor* Call::evaluate(SymTab& symTab) {
                 newSymTab.setValueFor(paramString, _arguments[i]->evaluate(newSymTab));
             }
             suites->evaluate(newSymTab);
-            if (newSymTab.isDefined("!{{FUNCTION_RETURN_VALUE}}!"))
+            std::cout << "These are the values within the first symtab\n";
+            symTab.print();
+            std::cout << "This the end the of the print\n";
+
+            if (newSymTab.isDefined("!{{FUNCTION_RETURN_VALUE}}!")) {
                 return newSymTab.getValueFor("!{{FUNCTION_RETURN_VALUE}}!");
+            }
             else
                 return nullptr;
         }
@@ -268,6 +273,7 @@ TypeDescriptor* Call::evaluate(SymTab& symTab) {
         std::cout << "The function: " << token().getName() << " was not defined\n";
         exit(1);
     }
+    return nullptr;
 }
 
 void Call::print() {

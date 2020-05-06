@@ -276,6 +276,7 @@ IfStatement* Parser::ifStatement() {
             break;
         }
     }
+    tokenizer.ungetToken();
 
     return ifStatements;
 }
@@ -389,6 +390,10 @@ ReturnStatement* Parser::returnStatement() {
         die("Parser::returnStatement", "Expected a return keyword, instead got", rettok);
     
     ExprNode* returnvalue = test();
+
+    Token eol = tokenizer.getToken();
+    if (!eol.eol())
+        die("Parser:: returnStatement", "Expected an end of line, instead got", eol);
 
     return new ReturnStatement(returnvalue);
 }

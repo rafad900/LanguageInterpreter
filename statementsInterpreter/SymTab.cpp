@@ -67,8 +67,12 @@ void SymTab::print() {
 			std::cout << var << " = " << "\"" << dynamic_cast<StrDescriptor*>(value)->stringValue() << "\"" << std::endl;
 		} else if (value->type() == TypeDescriptor::DOUBLE) {
 			std::cout << var << " = " << dynamic_cast<DblDescriptor*>(value)->doubleValue() << std::endl;
-		} else if (value->type() == TypeDescriptor::ARRAY) {
+		}
+		else if (value->type() == TypeDescriptor::ARRAY) {
 			dynamic_cast<ArrDescriptor*>(value)->print(); std::cout << std::endl;
+		}
+		else if (value->type() == TypeDescriptor::FUNC) {
+			std::cout << var << " contains a function\n";
 		}
     }
 }

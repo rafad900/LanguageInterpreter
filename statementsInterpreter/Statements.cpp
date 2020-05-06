@@ -152,8 +152,8 @@ void PrintStatement::evaluate(SymTab &symTab) {
 			else if (parent->type() == TypeDescriptor::ARRAY)
 				dynamic_cast<ArrDescriptor*>(parent)->print();
 			std::cout << " ";
-			if (!symTab.isDefined(parent))
-				delete parent;
+			/*if (!symTab.isDefined(parent))
+				delete parent;*/
 		} else {
 			TypeDescriptor *parent = e->evaluate(symTab);
 			if (parent->type() == TypeDescriptor::INTEGER) 
@@ -163,8 +163,8 @@ void PrintStatement::evaluate(SymTab &symTab) {
 			else 
 				std::cout << "\"" << dynamic_cast<StrDescriptor *>(parent)->stringValue() << "\"";
 			std::cout << " ";
-			if (!symTab.isDefined(parent))
-				delete parent;
+			/*if (!symTab.isDefined(parent))
+				delete parent;*/
 		}
 	}
 	std::cout << std::endl;
@@ -371,30 +371,6 @@ FunctionStatement::~FunctionStatement() {
 FunctionCallStatement::FunctionCallStatement(ExprNode* call) : _call{ call } {}
 
 void FunctionCallStatement::evaluate(SymTab& symTab) {
-	/*if (symTab.isDefined(_funcName)) {
-		TypeDescriptor* parent = symTab.getValueFor(_funcName);
-		if (parent->type() == TypeDescriptor::FUNC) {
-			std::vector<ExprNode*> paramId = dynamic_cast<FunDescriptor*>(parent)->function()->paramId();
-			Statements* suites = dynamic_cast<FunDescriptor*>(parent)->function()->suite();
-			if (paramId.size() != _arguments.size()) {
-				std::cout << "The number of parameters given for: " << _funcName << " is too much or too little\n";
-				exit(1);
-			}
-			SymTab newSymTab = symTab;
-			for (int i = 0; i < (int)paramId.size(); i++) {
-				std::string paramString = paramId[i]->token().getName();
-				newSymTab.setValueFor(paramString, _arguments[i]->evaluate(newSymTab));
-			}
-			suites->evaluate(newSymTab);
-		}
-		else {
-			std::cout << "The variable name: " << _funcName << " is not defined for a function\n";
-		}
-	}
-	else {
-		std::cout << "The function: " << _funcName << " was not defined\n";
-		exit(1);
-	}*/
 	TypeDescriptor* temp = _call->evaluate(symTab);
 }
 
