@@ -34,7 +34,7 @@ TypeDescriptor* InfixExprNode::evaluate(SymTab &symTab) {
         lValue = left()->evaluate(symTab);
     TypeDescriptor* rValue = right()->evaluate(symTab);
     TypeDescriptor* res;
-    if (token().symbol() == '\0') {
+    /*if (token().symbol() == '\0') {
         if (left() != nullptr) {
             std::cout << "InfixExprNode::evaluate: "; lValue->print(); std::cout << " " << token().relationalSymbol() << " "; rValue->print(); std::cout << std::endl;
         }
@@ -49,7 +49,7 @@ TypeDescriptor* InfixExprNode::evaluate(SymTab &symTab) {
         else {
             std::cout << "InfixExprNode::evaluate: "; std::cout << token().relationalSymbol() << " "; rValue->print(); std::cout << std::endl;
         }
-    }
+    }*/
     if( token().isAdditionOperator() ) {
     	res = perform_operation(lValue, rValue, 1);
     } else if(token().isSubtractionOperator()) {

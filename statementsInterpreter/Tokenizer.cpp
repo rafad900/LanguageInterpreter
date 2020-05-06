@@ -63,7 +63,7 @@ std::string Tokenizer::readString( char p ) {
 std::string Tokenizer::readName() {
     std::string name;
     char c;
-    while( inStream.get(c) && isalnum(c) ) {
+    while( inStream.get(c) && (isalnum(c) || c == '_')) {
         name += c;
     }
     if(inStream.good())  

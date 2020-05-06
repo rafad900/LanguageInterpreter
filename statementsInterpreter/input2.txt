@@ -1,8 +1,12 @@
-
-def a(b, c, d, e):
-	print a
-	print b
-	print d
-	print e
-
-a(1 ,2 ,3, 5)
+a = 4 * 2 * 5 * 3 * 10 - 40
+print a
+sumi = 0
+sumj = 0
+for i in range(10):
+    print i 
+    sumi = sumi + i
+    for j in range( 10 ):
+        sumj = sumj + j 
+        print j
+print sumi
+print sumj

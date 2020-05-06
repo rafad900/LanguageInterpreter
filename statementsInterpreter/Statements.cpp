@@ -142,6 +142,8 @@ void PrintStatement::evaluate(SymTab &symTab) {
 				std::cout << dynamic_cast<IntDescriptor*>(parent)->intValue();
 			else if (parent->type() == TypeDescriptor::DOUBLE)
 				std::cout << dynamic_cast<DblDescriptor*>(parent)->doubleValue();
+			else if (parent->type() == TypeDescriptor::FUNC)
+				parent->print();
 			else if (parent->type() == TypeDescriptor::STRING)
 				std::cout << "\"" << dynamic_cast<StrDescriptor*>(parent)->stringValue() << "\"";
 			else if (parent->type() == TypeDescriptor::ARRAY)
@@ -359,7 +361,6 @@ FunctionStatement::~FunctionStatement() {
 	for (int i = 0; i < (int)_params.size(); i++) {
 		delete _params[i];
 	}
-	
 	_params.clear();
 	delete _suite;
 }
@@ -377,7 +378,6 @@ void FunDescriptor::print() {
 }
 
 FunDescriptor::~FunDescriptor() {
-	delete _function;
 }
 
 // Function Call Statement 
