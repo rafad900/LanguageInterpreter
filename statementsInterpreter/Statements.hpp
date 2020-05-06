@@ -158,12 +158,23 @@ private:
 
 class FunctionCallStatement : public Statement {
 public:
-	FunctionCallStatement(std::string funcName, std::vector<ExprNode*> params);
+	FunctionCallStatement(ExprNode* call);
 	virtual void evaluate(SymTab& symTab);
 	virtual void print();
 	virtual ~FunctionCallStatement();
 private:
-	std::string _funcName;
-	std::vector<ExprNode*> _arguments;
+	/*td::string _funcName;
+	std::vector<ExprNode*> _arguments;*/
+	ExprNode* _call;
+};
+
+class ReturnStatement : public Statement {
+public:
+	ReturnStatement(ExprNode* test);
+	virtual void evaluate(SymTab& SymTab);
+	virtual void print();
+	virtual ~ReturnStatement();
+private:
+	ExprNode* _test;
 };
 #endif //EXPRINTER_STATEMENTS_HPP

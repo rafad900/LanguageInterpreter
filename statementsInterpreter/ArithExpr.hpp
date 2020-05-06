@@ -107,4 +107,16 @@ public:
     virtual ~Len();
 };
 
+
+
+class Call : public ExprNode {
+public:
+    Call(Token token,std::vector<ExprNode*> params);
+    virtual void print();
+    virtual TypeDescriptor* evaluate(SymTab& symTab);
+    virtual ~Call();
+private:
+    std::vector<ExprNode*> _arguments;
+};
+
 #endif //EXPRINTER_ARITHEXPR_HPP

@@ -53,6 +53,12 @@ Statements *Parser::statements() {
                 stmts->addStatement(funcStmt);
                 tok = tokenizer.getToken();
             }
+            else if (tok.isReturn()) {
+                tokenizer.ungetToken();
+                ReturnStatement* returnStmt = returnStatement();
+                stmts->addStatement(returnStmt);
+                tok = tokenizer.getToken();
+            }
             else {
                 tokenizer.ungetToken();
                 break;
@@ -344,6 +350,11 @@ FunctionStatement* Parser::functionStatement () {
 }
 
 FunctionCallStatement* Parser::functioncallStatement() {
+    ExprNode* call_stmt = call();
+    return new FunctionCallStatement(call_stmt);
+}
+
+ExprNode* Parser::call() {
     Token funcName = tokenizer.getToken();
     if (!funcName.isName())
         die("Parser::FunctionCallStatement", "Expected a function name, instead got", funcName);
@@ -369,8 +380,20 @@ FunctionCallStatement* Parser::functioncallStatement() {
     if (!closeParen.isCloseParen())
         die("Parser::FunctionCallStatement", "Expected a closing parentheses, instead got", closeParen);
 
-    return new FunctionCallStatement(funcName.getName(), arguments);
+    return new Call(funcName, arguments);
 }
+
+ReturnStatement* Parser::returnStatement() {
+    Token rettok = tokenizer.getToken();
+    if (!rettok.isReturn())
+        die("Parser::returnStatement", "Expected a return keyword, instead got", rettok);
+    
+    ExprNode* returnvalue = test();
+
+    return new ReturnStatement(returnvalue);
+}
+
+// Beginning of all ExprNode functions
 
 ExprNode *Parser::expr() {
     ExprNode *left = term();
@@ -450,6 +473,10 @@ ExprNode *Parser::primary() {
     else if (tok.isName()) {                 // Add the subscription logic here 
         if (tok.isLen())
             return lenOperation();
+        else if (tok.isFuntionCall()) {
+            tokenizer.ungetToken();
+            return call();
+        }
         return new Variable(tok);
     }
     else if (tok.isString())

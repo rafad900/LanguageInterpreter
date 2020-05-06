@@ -27,6 +27,7 @@ public:
     ArrayStatement* arrayStatement();
     FunctionStatement* functionStatement();
     FunctionCallStatement* functioncallStatement();
+    ReturnStatement* returnStatement();
 
     ExprNode *expr();
     ExprNode *term();
@@ -34,12 +35,14 @@ public:
 	ExprNode *relExpr();
 	ExprNode *factor();
     ExprNode *test();
-    ExprNode *testlist();
     ExprNode* or_test();
     ExprNode* and_test();
     ExprNode* not_test();
     ExprNode* subscription(ExprNode* variable, Token tok);
     ExprNode* lenOperation();
+    ExprNode* call();
+
+
 
 private:
     Tokenizer &tokenizer;

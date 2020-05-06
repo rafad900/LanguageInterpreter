@@ -6,7 +6,7 @@
 
 class TypeDescriptor {
 public:
-	enum  types { DOUBLE, STRING, INTEGER, ARRAY, FUNC};
+	enum types { DOUBLE, STRING, INTEGER, ARRAY, FUNC};
 	TypeDescriptor(types type);
 	types &type() { return _type; }
 	virtual void print() = 0;

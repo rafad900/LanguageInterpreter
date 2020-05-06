@@ -42,6 +42,7 @@ print (-5)
 b= 1.25 % 0.25
 #Done.......
 
+print "--------------------------------DONE WITH THE FIRST PART--------------------------------------------------"
 
 #Thank you...
 
@@ -81,3 +82,61 @@ for i in range(5):
     for c in range(a-(a-i)):
         print a
 
+a = 4 * 2 * 5 * 3 * 10 - 40
+print a
+sum_i = 0
+sum_j = 0
+for i in range(10):
+    print i 
+    sum_i = sum_i + i
+    for j in range( 10 ):
+        sum_j = sum_j + j 
+        print j
+print sum_i
+print sum_j
+
+print "--------------------------------------------------DONE WITH THE SECOND PART----------------------------------------"
+
+print "This is c before the function: ", c
+def first_function(a, b, random, something):
+    print a
+    print b
+    print random
+    print something
+    b = a * random - something
+    print b
+    c = 123
+    print "This is c within the function: ", c
+first_function(10, 20,30, 40)
+print "This is c outside the function: ", c, " They should not be the same"
+
+def second_function():
+    def fourth_function(): 
+        print "Inside the fourth function"
+    fourth_function()
+
+second_function()
+
+def fifth_function()
+
+
+
+
+# Factorial of a number using recursion
+
+def recur_factorial(n):
+   if n == 1:
+       return n
+   else:#recursion happens here
+       return n*recur_factorial(n-1)
+       #done with recursion
+
+num = 7
+
+# check if the number is negative
+if num < 0:
+   print("Sorry, factorial does not exist for negative numbers")
+elif num == 0:
+   print("The factorial of 0 is 1")
+else:
+   print("The factorial of", num, "is", recur_factorial(num))

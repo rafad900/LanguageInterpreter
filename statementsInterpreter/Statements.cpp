@@ -26,7 +26,6 @@ void Statements::print() {
 void Statements::evaluate(SymTab &symTab) {
     for (auto s: _statements)
         s->evaluate(symTab);
-		
 }
 
 Statements::~Statements() {
@@ -72,7 +71,11 @@ void AssignmentStatement::evaluate(SymTab &symTab) {
 	}
 	else {
 		TypeDescriptor* rhs = rhsExpression()->evaluate(symTab);
-		if (rhs->type() == TypeDescriptor::ARRAY) {
+		if (rhs == nullptr) {
+			std::cout << "The function had no return value\n";
+			exit(1);
+		}
+		else if (rhs->type() == TypeDescriptor::ARRAY) {
 			std::vector<TypeDescriptor*> copy;
 			dynamic_cast<ArrDescriptor*>(rhs)->testlistCopy(copy);
 			rhs = new ArrDescriptor(copy);
@@ -147,7 +150,7 @@ void PrintStatement::evaluate(SymTab &symTab) {
 			else if (parent->type() == TypeDescriptor::STRING)
 				std::cout << "\"" << dynamic_cast<StrDescriptor*>(parent)->stringValue() << "\"";
 			else if (parent->type() == TypeDescriptor::ARRAY)
-				dynamic_cast<ArrDescriptor*>(parent)->print(); std::cout << std::endl;
+				dynamic_cast<ArrDescriptor*>(parent)->print();
 			std::cout << " ";
 			if (!symTab.isDefined(parent))
 				delete parent;
@@ -237,9 +240,8 @@ void ForStatement::print() {
 		std::cout << ", ";
 	}
 	_testlist[_testlist.size() - 1]->print();
-	std::cout << ") { \n";
+	std::cout << ") : \n";
 	_stms->print();
-	std::cout << "}\n";
 }
 
 ForStatement::~ForStatement() {
@@ -365,26 +367,11 @@ FunctionStatement::~FunctionStatement() {
 	delete _suite;
 }
 
-// Function Descriptor 
-FunDescriptor::FunDescriptor(std::string funcName, FunctionStatement* function) : TypeDescriptor(TypeDescriptor::FUNC), _funcName{ funcName }, _function{ function } {}
-FunDescriptor::FunDescriptor(FunctionStatement* function) : TypeDescriptor(TypeDescriptor::FUNC), _function{ function } {}
-
-FunctionStatement*& FunDescriptor::function() {
-	return _function;
-}
-
-void FunDescriptor::print() {
-	std::cout << _funcName << " contains a function type\n";
-}
-
-FunDescriptor::~FunDescriptor() {
-}
-
 // Function Call Statement 
-FunctionCallStatement::FunctionCallStatement(std::string funcName, std::vector<ExprNode*> args) : _funcName{ funcName }, _arguments{ args } {}
+FunctionCallStatement::FunctionCallStatement(ExprNode* call) : _call{ call } {}
 
 void FunctionCallStatement::evaluate(SymTab& symTab) {
-	if (symTab.isDefined(_funcName)) {
+	/*if (symTab.isDefined(_funcName)) {
 		TypeDescriptor* parent = symTab.getValueFor(_funcName);
 		if (parent->type() == TypeDescriptor::FUNC) {
 			std::vector<ExprNode*> paramId = dynamic_cast<FunDescriptor*>(parent)->function()->paramId();
@@ -407,20 +394,30 @@ void FunctionCallStatement::evaluate(SymTab& symTab) {
 	else {
 		std::cout << "The function: " << _funcName << " was not defined\n";
 		exit(1);
-	}
+	}*/
+	TypeDescriptor* temp = _call->evaluate(symTab);
 }
 
 void FunctionCallStatement::print() {
-	std::cout << _funcName << "(";
-	for (ExprNode* e : _arguments) {
-		e->print();
-		std::cout << ", ";
-	}
-	std::cout << ")";	
+	_call->print();
 }
 
 FunctionCallStatement::~FunctionCallStatement() {
-	for (ExprNode* e : _arguments)
-		delete e;
-	_arguments.clear();
+	delete _call;
+}
+
+// Return Statement
+ReturnStatement::ReturnStatement(ExprNode* test) : _test{ test } {}
+
+void ReturnStatement::evaluate(SymTab& symTab) {
+	symTab.setValueFor("!{{FUNCTION_RETURN_VALUE}}!", _test->evaluate(symTab));
+}
+
+void ReturnStatement::print() {
+	std::cout << "return ";
+	_test->print();
+}
+
+ReturnStatement::~ReturnStatement() {
+	delete _test;
 }

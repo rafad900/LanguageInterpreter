@@ -4,6 +4,7 @@
 
 #include<iostream>
 #include "ArithExpr.hpp"
+#include "Statements.hpp"
 
 extern TypeDescriptor* perform_operation( TypeDescriptor* lValue, TypeDescriptor* rValue, int opcode);
 
@@ -218,3 +219,68 @@ TypeDescriptor* Len::evaluate(SymTab &symTab) {
 }
 
 Len::~Len() {}
+
+// Function Descriptor 
+FunDescriptor::FunDescriptor(std::string funcName, FunctionStatement* function) : TypeDescriptor(TypeDescriptor::FUNC), _funcName{ funcName }, _function{ function } {}
+FunDescriptor::FunDescriptor(FunctionStatement* function) : TypeDescriptor(TypeDescriptor::FUNC), _function{ function } {}
+
+FunctionStatement*& FunDescriptor::function() {
+    return _function;
+}
+
+void FunDescriptor::print() {
+    std::cout << _funcName << " contains a function type\n";
+}
+
+FunDescriptor::~FunDescriptor() {
+}
+
+// Call Class
+
+Call::Call(Token token, std::vector<ExprNode*> args) : ExprNode(token), _arguments{ args } {}
+
+TypeDescriptor* Call::evaluate(SymTab& symTab) {
+    if (symTab.isDefined(token().getName())) {
+        TypeDescriptor* parent = symTab.getValueFor(token().getName());
+        if (parent->type() == TypeDescriptor::FUNC) {
+            std::vector<ExprNode*> paramId = dynamic_cast<FunDescriptor*>(parent)->function()->paramId();
+            Statements* suites = dynamic_cast<FunDescriptor*>(parent)->function()->suite();
+            if (paramId.size() != _arguments.size()) {
+                std::cout << "The number of parameters given for: " << token().getName() << " is too much or too little\n";
+                exit(1);
+            }
+            SymTab newSymTab = symTab;
+            for (int i = 0; i < (int)paramId.size(); i++) {
+                std::string paramString = paramId[i]->token().getName();
+                newSymTab.setValueFor(paramString, _arguments[i]->evaluate(newSymTab));
+            }
+            suites->evaluate(newSymTab);
+            if (newSymTab.isDefined("!{{FUNCTION_RETURN_VALUE}}!"))
+                return newSymTab.getValueFor("!{{FUNCTION_RETURN_VALUE}}!");
+            else
+                return nullptr;
+        }
+        else {
+            std::cout << "The variable name: " << token().getName() << " is not defined for a function\n";
+        }
+    }
+    else {
+        std::cout << "The function: " << token().getName() << " was not defined\n";
+        exit(1);
+    }
+}
+
+void Call::print() {
+    std::cout << token().getName() << "(";
+    for (ExprNode* e : _arguments) {
+        e->print();
+        std::cout << ", ";
+    }
+    std::cout << ")";
+}
+
+Call::~Call() {
+    for (ExprNode* e : _arguments)
+        delete e;
+    _arguments.clear();
+}

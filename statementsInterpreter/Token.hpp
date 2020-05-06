@@ -48,7 +48,7 @@ public:
     bool isKeyword() const { return _name == "print" || _name == "for" || _name == "in" || _name == "range" || 
                                     _name == "and" || _name == "or" || _name == "not" || _name == "if"||
                                     _name == "else" || _name == "elif" || _name == "pop" || _name == "append" ||
-                                    _name == "def"; }
+                                    _name == "def" || _name == "return"; }
     bool isLen() const { return _name == "len"; }
     bool isAnd() const { return _name == "and"; }
     bool isOr() const { return _name == "or"; }
@@ -61,6 +61,7 @@ public:
     bool isIf() const { return _name == "if"; }
     bool isElif() const { return _name == "elif"; }
     bool isElse() const { return _name == "else"; }
+    bool isReturn() const { return _name == "return"; }
 	bool isLessThan() const 	{ return _symbol == '<'; }
 	bool isGreaterThan() const 	{ return _symbol == '>'; }
 	bool isEqualTo() const 		{ return _relationalSymbol == "=="; }

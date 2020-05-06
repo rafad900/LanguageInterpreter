@@ -72,7 +72,7 @@ std::string Tokenizer::readName() {
 }
 
 bool isDouble(std::string s) {
-	for (int i = 0; i < s.length(); i++)
+	for (int i = 0; i < (int)s.length(); i++)
 		if (s[i] == '.')
 			return true;
 	return false;
