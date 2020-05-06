@@ -47,16 +47,29 @@ Statements *Parser::statements() {
                 stmts->addStatement(ifStmt);
                 tok = tokenizer.getToken();
             }
+            else if (tok.isdef()) {
+                tokenizer.ungetToken();
+                FunctionStatement* funcStmt = functionStatement();
+                stmts->addStatement(funcStmt);
+                tok = tokenizer.getToken();
+            }
             else {
                 tokenizer.ungetToken();
                 break;
             }
     	}
-        else if (tok.isName() && tok.isFunction()) {
+        else if (tok.isName() && tok.isArrayFunction()) {
             std::cout << "It has read an array statement";
             tokenizer.ungetToken();
             ArrayStatement* arrayStmt = arrayStatement();
             stmts->addStatement(arrayStmt);
+            tok = tokenizer.getToken();
+        }
+        else if (tok.isName() && tok.isFuntionCall()) {
+            std::cout << "It has read a function call statement";
+            tokenizer.ungetToken();
+            FunctionCallStatement* funcCallStmt = functioncallStatement();
+            stmts->addStatement(funcCallStmt);
             tok = tokenizer.getToken();
         }
         else if (tok.isName()) {
@@ -328,6 +341,35 @@ FunctionStatement* Parser::functionStatement () {
 
 
     return new FunctionStatement(varName.getName(), parameters, stms);
+}
+
+FunctionCallStatement* Parser::functioncallStatement() {
+    Token funcName = tokenizer.getToken();
+    if (!funcName.isName())
+        die("Parser::FunctionCallStatement", "Expected a function name, instead got", funcName);
+
+    Token openParen = tokenizer.getToken();
+    if (!openParen.isOpenParen())
+        die("Parser::FunctionCallStatement", "Expected an open parentheses, instead got", openParen);
+
+    std::vector<ExprNode*> arguments;
+    Token test_token = tokenizer.getToken();
+    while (test_token.isName() || test_token.isWholeNumber() || test_token.isDouble() || test_token.isString() || test_token.isComma() || test_token.isOpenParen()) {
+        if (test_token.isComma()) {
+            test_token = tokenizer.getToken();
+            continue;
+        }
+        tokenizer.ungetToken();
+        arguments.push_back(test());	// MAKE ALL THE NEW EXPRESSION NODES AND SAVE THEM INTO THE VECTOR 
+        test_token = tokenizer.getToken();
+    }
+    tokenizer.ungetToken();
+
+    Token closeParen = tokenizer.getToken();
+    if (!closeParen.isCloseParen())
+        die("Parser::FunctionCallStatement", "Expected a closing parentheses, instead got", closeParen);
+
+    return new FunctionCallStatement(funcName.getName(), arguments);
 }
 
 ExprNode *Parser::expr() {

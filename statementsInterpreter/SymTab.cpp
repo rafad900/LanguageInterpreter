@@ -50,10 +50,12 @@ TypeDescriptor* SymTab::getValueFor(std::string vName) {
 	} else if (symTab.find(vName)->second->type() == TypeDescriptor::DOUBLE) {
 	  	std::cout << "SymTab::getValueFor: " << vName << " contains " << dynamic_cast<DblDescriptor*>(symTab.find(vName)->second)->doubleValue() << std::endl;
 	    return dynamic_cast<DblDescriptor*>(symTab.find(vName)->second);
-	}
-	else if (symTab.find(vName)->second->type() == TypeDescriptor::ARRAY) {
+	} else if (symTab.find(vName)->second->type() == TypeDescriptor::ARRAY) {
 		std::cout << "SymTab::getValueFor: " << vName << " contains "; dynamic_cast<ArrDescriptor*>(symTab.find(vName)->second)->print(); std::cout << std::endl;
 		return dynamic_cast<ArrDescriptor*>(symTab.find(vName)->second);
+	}
+	else if (symTab.find(vName)->second->type() == TypeDescriptor::FUNC) {
+		return symTab.find(vName)->second;
 	}
 	return nullptr;	
 }

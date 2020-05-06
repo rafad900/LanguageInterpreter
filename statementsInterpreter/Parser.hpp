@@ -26,6 +26,7 @@ public:
     IfStatement* ifStatement();
     ArrayStatement* arrayStatement();
     FunctionStatement* functionStatement();
+    FunctionCallStatement* functioncallStatement();
 
     ExprNode *expr();
     ExprNode *term();

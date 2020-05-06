@@ -189,6 +189,8 @@ Token Tokenizer::getToken() {
             token.setName(readName());
             if (inStream.peek() == '.')
                 token.setFunction() = true;
+            else if (inStream.peek() == '(')
+                token.setFunctionCall() = true;
         }
    	} else if( c == '>' || c == '<') {
    		if (inStream.peek() == '=') {

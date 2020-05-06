@@ -1,8 +1,8 @@
 
-c = [2.1, 2.2, 3.456]
-c.append(3.2)
-c.append(9.8)
-c.pop()
-print c
+def a(b, c, d, e):
+	print a
+	print b
+	print d
+	print e
 
-a = len(c)
+a(1 ,2 ,3, 5)

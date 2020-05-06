@@ -333,7 +333,7 @@ ArrayStatement::~ArrayStatement() {
 FunctionStatement::FunctionStatement(std::string varName, std::vector<ExprNode*> params, Statements* suite) : _funcName{ varName }, _params { params }, _suite{ suite } {}
 
 void FunctionStatement::evaluate(SymTab& symTab) {
-	if (symTab.isDefined(_funcName))
+	if (!symTab.isDefined(_funcName))
 		symTab.setValueFor(_funcName, new FunDescriptor(_funcName, this));
 }
 
@@ -341,9 +341,18 @@ void FunctionStatement::print() {
 	std::cout << "def " << _funcName << "(";
 	for (ExprNode* e : _params) {
 		e->print();
-		std::cout << std::endl;
+		std::cout << ", ";
 	}
+	std::cout << "):\n";
 	_suite->print();
+}
+
+std::vector<ExprNode*>& FunctionStatement::paramId() {
+	return _params;
+}
+
+Statements*& FunctionStatement::suite() {
+	return _suite;
 }
 
 FunctionStatement::~FunctionStatement() {
@@ -369,4 +378,49 @@ void FunDescriptor::print() {
 
 FunDescriptor::~FunDescriptor() {
 	delete _function;
+}
+
+// Function Call Statement 
+FunctionCallStatement::FunctionCallStatement(std::string funcName, std::vector<ExprNode*> args) : _funcName{ funcName }, _arguments{ args } {}
+
+void FunctionCallStatement::evaluate(SymTab& symTab) {
+	if (symTab.isDefined(_funcName)) {
+		TypeDescriptor* parent = symTab.getValueFor(_funcName);
+		if (parent->type() == TypeDescriptor::FUNC) {
+			std::vector<ExprNode*> paramId = dynamic_cast<FunDescriptor*>(parent)->function()->paramId();
+			Statements* suites = dynamic_cast<FunDescriptor*>(parent)->function()->suite();
+			if (paramId.size() != _arguments.size()) {
+				std::cout << "The number of parameters given for: " << _funcName << " is too much or too little\n";
+				exit(1);
+			}
+			SymTab newSymTab = symTab;
+			for (int i = 0; i < (int)paramId.size(); i++) {
+				std::string paramString = paramId[i]->token().getName();
+				newSymTab.setValueFor(paramString, _arguments[i]->evaluate(newSymTab));
+			}
+			suites->evaluate(newSymTab);
+		}
+		else {
+			std::cout << "The variable name: " << _funcName << " is not defined for a function\n";
+		}
+	}
+	else {
+		std::cout << "The function: " << _funcName << " was not defined\n";
+		exit(1);
+	}
+}
+
+void FunctionCallStatement::print() {
+	std::cout << _funcName << "(";
+	for (ExprNode* e : _arguments) {
+		e->print();
+		std::cout << ", ";
+	}
+	std::cout << ")";	
+}
+
+FunctionCallStatement::~FunctionCallStatement() {
+	for (ExprNode* e : _arguments)
+		delete e;
+	_arguments.clear();
 }

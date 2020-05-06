@@ -134,6 +134,8 @@ public:
 	FunctionStatement(std::string varName, std::vector<ExprNode*> params, Statements* suite);
 	virtual void evaluate(SymTab& SymTab);
 	virtual void print();
+	std::vector<ExprNode*>& paramId();
+	Statements*& suite();
 	virtual ~FunctionStatement();
 
 private:
@@ -156,7 +158,12 @@ private:
 
 class FunctionCallStatement : public Statement {
 public:
-	FunctionCallStatement(std::string funcName);
-	
+	FunctionCallStatement(std::string funcName, std::vector<ExprNode*> params);
+	virtual void evaluate(SymTab& symTab);
+	virtual void print();
+	virtual ~FunctionCallStatement();
+private:
+	std::string _funcName;
+	std::vector<ExprNode*> _arguments;
 };
 #endif //EXPRINTER_STATEMENTS_HPP

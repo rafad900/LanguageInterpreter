@@ -35,15 +35,16 @@ public:
     void setDedent() { dedent = true; }
     bool isIndent() const { return indent; }
     bool isDedent() const { return dedent; }
-    bool isFunction() const { return _isFunction; }
-    bool &setFunction() { return _isFunction; }
+    bool isArrayFunction() const { return _isArray; }
+    bool &setFunction() { return _isArray; }
+    bool isFuntionCall() const { return _isFunction; }
+    bool &setFunctionCall() { return _isFunction; }
 
     bool isHash() const { return _symbol == '#'; }
     bool isPeriod() const { return _symbol == '.'; }
     bool isComma() const { return _symbol == ','; }
     bool isSingleQuotes() const { return _symbol == '\''; }
     bool isDoubleQuotes() const { return _symbol == '\"'; }
-
     bool isKeyword() const { return _name == "print" || _name == "for" || _name == "in" || _name == "range" || 
                                     _name == "and" || _name == "or" || _name == "not" || _name == "if"||
                                     _name == "else" || _name == "elif" || _name == "pop" || _name == "append" ||
@@ -132,6 +133,7 @@ private:
     std::string _relationalSymbol;
 	std::string _string;
     bool _isFunction;
+    bool _isArray;
 };
 
 #endif //EXPRINTER_TOKEN_HPP
