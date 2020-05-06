@@ -289,7 +289,7 @@ ArrayStatement* Parser::arrayStatement() {
     return new ArrayStatement(_test, function.getName(), varName.getName());
 }
 
-FunctionStatement* Parser::functionStatement() {
+FunctionStatement* Parser::functionStatement () {
     Token def = tokenizer.getToken();
     if (!def.isdef())
         die("Parser::functionStatement", "def keyword expected, instead got", def);
@@ -302,7 +302,7 @@ FunctionStatement* Parser::functionStatement() {
     if (!openParen.isOpenParen())
         die("Parser::functionStatement", "Expected an open paretheses, instead got", openParen);
 
-    std::vector<ExprNode*> params;
+    std::vector<ExprNode*> parameters;
     Token test_token = tokenizer.getToken();
     while ( test_token.isName() || test_token.isComma() || test_token.isOpenParen()) {
         if (test_token.isComma()) {
@@ -310,7 +310,7 @@ FunctionStatement* Parser::functionStatement() {
             continue;
         }
         tokenizer.ungetToken();
-        params.push_back(test());	// MAKE ALL THE NEW EXPRESSION NODES AND SAVE THEM INTO THE VECTOR 
+        parameters.push_back(test());	// MAKE ALL THE NEW EXPRESSION NODES AND SAVE THEM INTO THE VECTOR 
         test_token = tokenizer.getToken();
     }
 
@@ -327,7 +327,7 @@ FunctionStatement* Parser::functionStatement() {
     Statements* stms = suite();
 
 
-    return new FunctionStatement(varName.getName, params, suite);
+    return new FunctionStatement(varName.getName(), parameters, stms);
 }
 
 ExprNode *Parser::expr() {

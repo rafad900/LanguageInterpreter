@@ -142,4 +142,21 @@ private:
 	Statements* _suite;
 };
 
+class FunDescriptor : public TypeDescriptor {
+public:
+	FunDescriptor(std::string funcName, FunctionStatement* function);
+	FunDescriptor(FunctionStatement* function);
+	FunctionStatement*& function();
+	virtual void print();
+	virtual ~FunDescriptor();
+private:
+	FunctionStatement* _function;
+	std::string _funcName;
+};
+
+class FunctionCallStatement : public Statement {
+public:
+	FunctionCallStatement(std::string funcName);
+	
+};
 #endif //EXPRINTER_STATEMENTS_HPP

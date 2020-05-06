@@ -29,7 +29,7 @@ InfixExprNode::~InfixExprNode() {
 }
 
 TypeDescriptor* InfixExprNode::evaluate(SymTab &symTab) {
-    TypeDescriptor* lValue;
+    TypeDescriptor* lValue = nullptr;
     if (left() != nullptr)
         lValue = left()->evaluate(symTab);
     TypeDescriptor* rValue = right()->evaluate(symTab);

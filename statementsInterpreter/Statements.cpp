@@ -198,7 +198,7 @@ Statements *&ForStatement::stms() {
 void ForStatement::evaluate(SymTab& symTab) {
 	Range* rg;
 
-	for (int i = 0; i < _testlist.size(); i++) {
+	for (int i = 0; i < (int)_testlist.size(); i++) {
 		TypeDescriptor* parent = _testlist[i]->evaluate(symTab);
 		if (parent->type() != TypeDescriptor::INTEGER) {
 			std::cout << "ForStatement::evaluate: parameters for range have to be integers\n";
@@ -230,7 +230,7 @@ void ForStatement::evaluate(SymTab& symTab) {
 void ForStatement::print() {
 
 	std::cout << "for " << _id << " in range(";	
-	for (int i = 0; i < _testlist.size() - 1; i++) {
+	for (int i = 0; i < (int)_testlist.size() - 1; i++) {
 		_testlist[i]->print();
 		std::cout << ", ";
 	}
@@ -252,7 +252,7 @@ ForStatement::~ForStatement() {
 IfStatement::IfStatement() : testSuites{ 0 } {}
 
 void IfStatement::evaluate(SymTab &symTab) {
-	for (int i = 0; i < testSuites.size(); i++) {
+	for (int i = 0; i < (int)testSuites.size(); i++) {
 		if (dynamic_cast<IntDescriptor*>(testSuites[i].first->evaluate(symTab))->intValue()) {
 			testSuites[i].second->evaluate(symTab);
 			break;
@@ -266,7 +266,7 @@ void IfStatement::print() {
 	std::cout << " :\n";
 	testSuites[0].second->print();
 	std::cout << std::endl;
-	for (int i = 1; i < testSuites.size(); i++) {
+	for (int i = 1; i < (int)testSuites.size(); i++) {
 		std::cout << "elif ";
 		testSuites[i].first->print();
 		std::cout << " :\n";
@@ -280,7 +280,7 @@ void IfStatement::insertSuite(ExprNode* test, Statements* stms) {
 }
 
 IfStatement::~IfStatement() {
-	for (int i = 0; i < testSuites.size(); i++) {
+	for (int i = 0; i < (int)testSuites.size(); i++) {
 		delete testSuites[i].first;
 		delete testSuites[i].second;
 	}
@@ -333,15 +333,40 @@ ArrayStatement::~ArrayStatement() {
 FunctionStatement::FunctionStatement(std::string varName, std::vector<ExprNode*> params, Statements* suite) : _funcName{ varName }, _params { params }, _suite{ suite } {}
 
 void FunctionStatement::evaluate(SymTab& symTab) {
+	if (symTab.isDefined(_funcName))
+		symTab.setValueFor(_funcName, new FunDescriptor(_funcName, this));
+}
 
-	//_suite->evaluate(symTab); Generally I won't call evaluate here because I don't want it to run when I read it, only when I call it
+void FunctionStatement::print() {
+	std::cout << "def " << _funcName << "(";
+	for (ExprNode* e : _params) {
+		e->print();
+		std::cout << std::endl;
+	}
+	_suite->print();
 }
 
 FunctionStatement::~FunctionStatement() {
-	for (int i = 0; i < _params.size(); i++) {
+	for (int i = 0; i < (int)_params.size(); i++) {
 		delete _params[i];
 	}
 	
 	_params.clear();
 	delete _suite;
+}
+
+// Function Descriptor 
+FunDescriptor::FunDescriptor(std::string funcName, FunctionStatement* function) : TypeDescriptor(TypeDescriptor::FUNC), _funcName{ funcName }, _function{ function } {}
+FunDescriptor::FunDescriptor(FunctionStatement* function) : TypeDescriptor(TypeDescriptor::FUNC), _function{ function } {}
+
+FunctionStatement*& FunDescriptor::function() {
+	return _function;
+}
+
+void FunDescriptor::print() {
+	std::cout << _funcName << " contains a function type\n";
+}
+
+FunDescriptor::~FunDescriptor() {
+	delete _function;
 }
