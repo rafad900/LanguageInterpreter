@@ -28,20 +28,17 @@ Statements *Parser::statements() {
     	}
     	if (tok.isKeyword()) {
     		if (tok.isFor()) {
-				//std::cout << "It has read for \n";
 				tokenizer.ungetToken();
 				ForStatement *forStmt = forStatement();
 				stmts->addStatement(forStmt);
 				tok = tokenizer.getToken();
     		} else if (tok.isPrint()) {
-				//std::cout << "It has read print\n";
 				tokenizer.ungetToken();
-				PrintStatement *printStmt = printStatement();
+ 				PrintStatement *printStmt = printStatement();
 				stmts->addStatement(printStmt);
 				tok = tokenizer.getToken();
             }
             else if (tok.isIf()) {
-                //std::cout << "It has read if\n";
                 tokenizer.ungetToken();
                 IfStatement* ifStmt = ifStatement();
                 stmts->addStatement(ifStmt);
@@ -65,21 +62,18 @@ Statements *Parser::statements() {
             }
     	}
         else if (tok.isName() && tok.isArrayFunction()) {
-            std::cout << "It has read an array statement";
             tokenizer.ungetToken();
             ArrayStatement* arrayStmt = arrayStatement();
             stmts->addStatement(arrayStmt);
             tok = tokenizer.getToken();
         }
         else if (tok.isName() && tok.isFuntionCall()) {
-            std::cout << "It has read a function call statement";
             tokenizer.ungetToken();
             FunctionCallStatement* funcCallStmt = functioncallStatement();
             stmts->addStatement(funcCallStmt);
             tok = tokenizer.getToken();
         }
         else if (tok.isName()) {
-    		std::cout << "It has read assignement\n";
 			tokenizer.ungetToken();
 			AssignmentStatement *assignStmt = assignStatement();
 			stmts->addStatement(assignStmt);
@@ -95,10 +89,14 @@ PrintStatement *Parser::printStatement() {
 	Token keyword = tokenizer.getToken();
 	if (!keyword.isKeyword())
 		die("Parser::printStatement", "Expected a keyword token, instead got", keyword); 
+
+    Token openParen = tokenizer.getToken();
+    if (!openParen.isOpenParen())
+        tokenizer.ungetToken();
 	
 	std::vector<ExprNode *> testlist;
 	Token test_token = tokenizer.getToken();
-	while (test_token.isString() || test_token.isWholeNumber() || test_token.isName() || test_token.isComma() || test_token.isOpenParen() ) {
+	while (test_token.isString() || test_token.isWholeNumber() || test_token.isName() || test_token.isComma() || test_token.isOpenParen() || test_token.isSubtractionOperator()) {
 		if (test_token.isComma()) {
 			test_token = tokenizer.getToken();
 			continue;
@@ -110,15 +108,15 @@ PrintStatement *Parser::printStatement() {
 
 	tokenizer.ungetToken();
 
+    Token closeParen = tokenizer.getToken();
+    if (!closeParen.isCloseParen())
+        tokenizer.ungetToken();
+
 	return new PrintStatement(testlist);
 }
 
 
 AssignmentStatement *Parser::assignStatement() {
-    // Parses the following grammar rule
-    // 
-    // <assign-stmtement> -> <id> = <expr>
-
     Token varName = tokenizer.getToken();
     if (!varName.isName())
         die("Parser::assignStatement", "Expected a name token, instead got", varName);
@@ -146,7 +144,7 @@ AssignmentStatement *Parser::assignStatement() {
     if (possibleBracket.isOpenBracket() && isSubscription == false) {
         std::vector<ExprNode*> testlist;
         Token test_token = tokenizer.getToken();
-        while (test_token.isString() || test_token.isName() || test_token.isComma() || test_token.isOpenParen() || test_token.isWholeNumber() || test_token.isDouble()) {
+        while (test_token.isString() || test_token.isName() || test_token.isComma() || test_token.isOpenParen() || test_token.isWholeNumber() || test_token.isDouble() || test_token.isSubtractionOperator()) {
             if (test_token.isComma()) {
                 test_token = tokenizer.getToken();
                 continue;
@@ -160,9 +158,7 @@ AssignmentStatement *Parser::assignStatement() {
         return new AssignmentStatement(varName.getName(), testlist);
     }
     tokenizer.ungetToken();
-	// This begins a sort of recursive call down the grammar rules 
     ExprNode *rightHandSideExpr = test();
-    // I removed the check for the semicolon and call the die function 
     Token tok = tokenizer.getToken();
     if (!tok.eol()) 
     	die("Parser::assignStatement", "Expected an equal sign, instead got", tok);
@@ -198,7 +194,7 @@ ForStatement *Parser::forStatement() {
 
     std::vector<ExprNode*> testlist;
     Token test_token = tokenizer.getToken();
-    while (test_token.isString() || test_token.isName() || test_token.isComma() || test_token.isOpenParen() || test_token.isWholeNumber() || test_token.isDouble()) {
+    while (test_token.isString() || test_token.isName() || test_token.isComma() || test_token.isOpenParen() || test_token.isWholeNumber() || test_token.isDouble() || test_token.isSubtractionOperator()) {
         if (test_token.isComma()) {
             test_token = tokenizer.getToken();
             continue;
@@ -276,7 +272,7 @@ IfStatement* Parser::ifStatement() {
             break;
         }
     }
-    tokenizer.ungetToken();
+    //tokenizer.ungetToken();
 
     return ifStatements;
 }
@@ -366,7 +362,7 @@ ExprNode* Parser::call() {
 
     std::vector<ExprNode*> arguments;
     Token test_token = tokenizer.getToken();
-    while (test_token.isName() || test_token.isWholeNumber() || test_token.isDouble() || test_token.isString() || test_token.isComma() || test_token.isOpenParen()) {
+    while (test_token.isName() || test_token.isWholeNumber() || test_token.isDouble() || test_token.isString() || test_token.isComma() || test_token.isOpenParen() || test_token.isSubtractionOperator()) {
         if (test_token.isComma()) {
             test_token = tokenizer.getToken();
             continue;

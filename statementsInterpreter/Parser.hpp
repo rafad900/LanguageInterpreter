@@ -42,8 +42,6 @@ public:
     ExprNode* lenOperation();
     ExprNode* call();
 
-
-
 private:
     Tokenizer &tokenizer;
 

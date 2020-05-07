@@ -39,13 +39,11 @@ int main(int argc, char *argv[]) {
     }
     // Creates this symtab object
     SymTab symTab;
-    std::cout << "\nABOUT TO PRINT\n";
-    statements->print();
-    std::cout << "ABOUT TO EVALUATE\n";
+    //std::cout << "\nABOUT TO PRINT\n";
+    //statements->print();
 	statements->evaluate(symTab);
 
     // uses the symTab to evaluate the statements
-    std::cout << "\n\nNumber of lines: " << tokenizer.getnumoflines() << std::endl;
     delete statements;
     symTab.delete_descriptors();
     return 0;

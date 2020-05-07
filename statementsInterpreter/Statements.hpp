@@ -163,8 +163,6 @@ public:
 	virtual void print();
 	virtual ~FunctionCallStatement();
 private:
-	/*td::string _funcName;
-	std::vector<ExprNode*> _arguments;*/
 	ExprNode* _call;
 };
 

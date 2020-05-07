@@ -35,22 +35,7 @@ TypeDescriptor* InfixExprNode::evaluate(SymTab &symTab) {
         lValue = left()->evaluate(symTab);
     TypeDescriptor* rValue = right()->evaluate(symTab);
     TypeDescriptor* res;
-    /*if (token().symbol() == '\0') {
-        if (left() != nullptr) {
-            std::cout << "InfixExprNode::evaluate: "; lValue->print(); std::cout << " " << token().relationalSymbol() << " "; rValue->print(); std::cout << std::endl;
-        }
-        else {
-            std::cout << "InfixExprNode::evaluate: "; std::cout << token().relationalSymbol() << " "; rValue->print(); std::cout << std::endl;
-        }
-    }
-    else {
-        if (left() != nullptr) {
-            std::cout << "InfixExprNode::evaluate: "; lValue->print(); std::cout << " " << token().symbol() << " "; rValue->print(); std::cout << std::endl;
-        }
-        else {
-            std::cout << "InfixExprNode::evaluate: "; std::cout << token().relationalSymbol() << " "; rValue->print(); std::cout << std::endl;
-        }
-    }*/
+
     if( token().isAdditionOperator() ) {
     	res = perform_operation(lValue, rValue, 1);
     } else if(token().isSubtractionOperator()) {
@@ -89,10 +74,10 @@ TypeDescriptor* InfixExprNode::evaluate(SymTab &symTab) {
         std::cout << std::endl;
         exit(2);
     }
-    /*if (!symTab.isDefined(rValue))
+    if (!symTab.isDefined(rValue))
         delete rValue;
     if (!symTab.isDefined(lValue))
-        delete lValue;*/
+        delete lValue;
     return res;
 }
 
@@ -111,7 +96,6 @@ void WholeNumber::print() {
 }
 
 TypeDescriptor* WholeNumber::evaluate(SymTab &symTab) {
-    //std::cout << "WholeNumber::evaluate: returning " << token().getWholeNumber() << std::endl;
     return new IntDescriptor(token().getWholeNumber());
 }
 
@@ -130,7 +114,6 @@ TypeDescriptor* Variable::evaluate(SymTab &symTab) {
         std::cout << "ERROR: Variable::evaluate: Use of undefined variable, " << token().getName() << std::endl;
         exit(1);
     }
-    //std::cout << "Variable::evaluate: returning " << std::endl;
     return symTab.getValueFor(token().getName());
 }
 
@@ -147,7 +130,6 @@ void UserString::print() {
 }
 
 TypeDescriptor* UserString::evaluate(SymTab &symTab) {
-    //std::cout << "UserString::evaluate: returning " << token().getString() << std::endl;
     return new StrDescriptor(token().getString());
 }
 
@@ -162,7 +144,6 @@ void DoubleNumber::print() {
 }
 
 TypeDescriptor* DoubleNumber::evaluate(SymTab &symTab) {
-    //std::cout << "Double::evaluate: returning " << token().getDouble() << std::endl;
     return new DblDescriptor(token().getDouble());
 }
 
@@ -249,20 +230,21 @@ TypeDescriptor* Call::evaluate(SymTab& symTab) {
                 std::cout << "The number of parameters given for: " << token().getName() << " is too much or too little\n";
                 exit(1);
             }
-            SymTab newSymTab = symTab;
+            SymTab newSymTab;
+            newSymTab = symTab; // Using the operator overloaded function to make a deep copy of all the type descriptors in the map
             for (int i = 0; i < (int)paramId.size(); i++) {
                 std::string paramString = paramId[i]->token().getName();
                 newSymTab.setValueFor(paramString, _arguments[i]->evaluate(newSymTab));
             }
             suites->evaluate(newSymTab);
-            std::cout << "These are the values within the first symtab\n";
-            symTab.print();
-            std::cout << "This the end the of the print\n";
 
             if (newSymTab.isDefined("!{{FUNCTION_RETURN_VALUE}}!")) {
-                return newSymTab.getValueFor("!{{FUNCTION_RETURN_VALUE}}!");
+                TypeDescriptor* temp = newSymTab.getValueFor("!{{FUNCTION_RETURN_VALUE}}!");
+                //newSymTab.delete_descriptors();
+                return temp;
             }
             else
+                //newSymTab.delete_descriptors();
                 return nullptr;
         }
         else {

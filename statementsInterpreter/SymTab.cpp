@@ -11,18 +11,6 @@ void SymTab::setValueFor(std::string vName, TypeDescriptor* td) {
 	if (isDefined(vName)) {
 		delete getValueFor(vName);
 	}
-	/*if (td->type() == TypeDescriptor::INTEGER) {
-		std::cout << vName << " <- " << dynamic_cast<IntDescriptor*>(td)->intValue() << std::endl;
-	}
-	else if (td->type() == TypeDescriptor::STRING) {
-		std::cout << vName << " <- " << "\"" << dynamic_cast<StrDescriptor*>(td)->stringValue() << "\"" << std::endl;
-	}
-	else if (td->type() == TypeDescriptor::DOUBLE) {
-		std::cout << vName << " <- " << dynamic_cast<DblDescriptor*>(td)->doubleValue() << std::endl;
-	}
-	else if (td->type() == TypeDescriptor::ARRAY) {
-		std::cout << vName << " <- "; dynamic_cast<ArrDescriptor*>(td)->print(); std::cout << std::endl;
-	}*/
 	symTab[vName] = td;
 }
 
@@ -42,16 +30,12 @@ TypeDescriptor* SymTab::getValueFor(std::string vName) {
         std::cout << "SymTab::getValueFor: " << vName << " has not been defined.\n";
         exit(1);
 	} else if (symTab.find(vName)->second->type() == TypeDescriptor::INTEGER) {
-		//std::cout << "SymTab::getValueFor: " << vName << " contains " << dynamic_cast<IntDescriptor*>(symTab.find(vName)->second)->intValue() << std::endl;
 	    return  symTab.find(vName)->second;
 	} else if (symTab.find(vName)->second->type() == TypeDescriptor::STRING) {
-		//std::cout << "SymTab::getValueFor: " << vName << " contains " << dynamic_cast<StrDescriptor*>(symTab.find(vName)->second)->stringValue() << std::endl;
 	    return symTab.find(vName)->second;
 	} else if (symTab.find(vName)->second->type() == TypeDescriptor::DOUBLE) {
-	  	//std::cout << "SymTab::getValueFor: " << vName << " contains " << dynamic_cast<DblDescriptor*>(symTab.find(vName)->second)->doubleValue() << std::endl;
 	    return symTab.find(vName)->second;
 	} else if (symTab.find(vName)->second->type() == TypeDescriptor::ARRAY) {
-		//std::cout << "SymTab::getValueFor: " << vName << " contains "; dynamic_cast<ArrDescriptor*>(symTab.find(vName)->second)->print(); std::cout << std::endl;
 		return symTab.find(vName)->second;
 	} else if (symTab.find(vName)->second->type() == TypeDescriptor::FUNC) {
 		return symTab.find(vName)->second;
@@ -77,9 +61,37 @@ void SymTab::print() {
     }
 }
 
+
+void SymTab::operator = (const SymTab& OtherTable) {  // OVERLOADED OPERATOR USED FOR WHEN CREATING SYMBOL TABLES OF DIFFERENT SCOPES
+	
+	for (auto const& x : OtherTable.symTab) {
+		if (x.second->type() == TypeDescriptor::INTEGER) {
+			int temp = dynamic_cast<IntDescriptor*>(x.second)->intValue();
+			this->setValueFor(x.first, new IntDescriptor(temp));
+		}
+		else if (x.second->type() == TypeDescriptor::STRING) {
+			std::string temp = dynamic_cast<StrDescriptor*>(x.second)->stringValue();
+			this->setValueFor(x.first, new StrDescriptor(temp));
+		}
+		else if (x.second->type() == TypeDescriptor::DOUBLE) {
+			double temp = dynamic_cast<DblDescriptor*>(x.second)->doubleValue();
+			this->setValueFor(x.first, new DblDescriptor(temp));
+		}
+		else if (x.second->type() == TypeDescriptor::ARRAY) {
+			std::vector<TypeDescriptor*> temp;
+			dynamic_cast<ArrDescriptor*>(x.second)->testlistCopy(temp);
+			this->setValueFor(x.first, new ArrDescriptor(temp));
+		}
+		else if (x.second->type() == TypeDescriptor::FUNC) {
+			this->setValueFor(x.first, x.second);
+		}
+	}
+
+}
+
 void SymTab::delete_descriptors() {
 	for (auto it = symTab.begin(); it != symTab.end(); ++it) {
-		if (it->second)
+		if (it->second->type)
 			delete it->second;
 		it->second = NULL;
 	}

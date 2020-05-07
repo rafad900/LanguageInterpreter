@@ -22,6 +22,7 @@ public:
     TypeDescriptor* getValueFor(std::string vName);
     void print();
     void delete_descriptors();
+    void operator = (const SymTab& SymTab);
 
 private:
     std::map<std::string, TypeDescriptor *> symTab;

@@ -36,6 +36,8 @@ void Tokenizer::readComment() {
 	char c;
 	while ( inStream.get(c) && c != '\n') 
 		;
+    if (c == '\n')
+        inStream.putback(c);
 	numoflines++;
 }
 
@@ -107,8 +109,12 @@ Token Tokenizer::getToken() {
 
     char c;
     char t;
-    while (inStream.get(c) && isspace(c) && c != '\n') 
-        spaces++;
+    while (inStream.get(c) && (isspace(c) || c == '#')  && c != '\n') {
+        if (c == '#')
+            readComment();
+        else
+            spaces++;
+    }
 
     if(inStream.bad()) {
         std::cout << "Error while reading the input stream in Tokenizer.\n";
@@ -117,6 +123,7 @@ Token Tokenizer::getToken() {
 
     Token token;
     if (inStream.eof()) {
+        spaces = 0;
         dedent(token);
         if (!token.isIndent() && !token.isDedent())
             token.eof() = true;
@@ -202,9 +209,6 @@ Token Tokenizer::getToken() {
     		inStream.get(t);
     		token.relationalSymbol(std::string(1, c) + t);
     	}
-    } else if (c == '#') {
-    	readComment();
-    	token.eol() = true;
     } else {
         std::cout << "Unknown character in input. ->" << c << "<-" << std::endl;
       	exit(1);

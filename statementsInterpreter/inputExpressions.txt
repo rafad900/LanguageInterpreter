@@ -38,7 +38,6 @@ c = "b" < "z"
 d = 20.12 < 20.2
 e = 20.12 + 2 + 3 /1.2
 f = 3 + (20.12 *  3)
-print (-5)
 b= 1.25 % 0.25
 #Done.......
 
@@ -117,9 +116,18 @@ def second_function():
 
 second_function()
 
-def fifth_function()
+def fifth_function():
+    return 0
+    #this does literatlly nothing 
 
+fifth_function()
 
+def Sixth_function(x, y, z):
+    for i in range(10):
+        x = x * z
+        for j in range(10):
+            x = x * y
+    print x
 
 
 # Factorial of a number using recursion
@@ -140,3 +148,65 @@ elif num == 0:
    print("The factorial of 0 is 1")
 else:
    print("The factorial of", num, "is", recur_factorial(num))
+
+
+def f3(x,y):
+    print ("In f3")
+    a = x + y
+    print ("a = x + y::",a)
+    return a
+def f2():
+    print ("In f2()")
+    a = 10
+    b = 15
+    print ("a and b assigned!")
+    f3(a,b)
+    print ("First call made","a",a,"b",b)
+    print ("Returned",f3(a,b),"from f3")
+def f1(a,b):
+    print("In f1(a,b):")
+    x = a - b
+    print (x)
+    f2()
+    print ("x = a - b::",x)
+def fx(h,i,j,k):
+    h = h*h
+    print (h,i,j,k)
+    f1(100 , 200)
+a = 10
+b = 21
+c = 19
+d = 95
+fx(a,b,c,d)
+e = "After call"
+print (a,b,c,d)
+print ("Done")
+
+
+# Here x is a new reference to same list lst
+def myFun(x):
+   print ("Function called with x = ",x)
+   x[0] = 20
+   print (x[0])
+
+
+ast = [10, 11, 12, 13, 14, 15]
+print (ast)
+myFun(ast)
+print(ast)
+
+print "------------------------DONE WITH THE THIRD PART--------------------------------------------"
+
+def function_eight(a, b, c): 
+    def function_nine(x, y, z):
+        def tenth(i):
+            print i
+        tenth("THIS IS TEN")
+        print "This is nine: ", x * y * z
+    function_nine(3,4,5)
+    print "This is the eight: ", a - b - c
+function_eight(10,5,2)
+
+z = -5
+print z
+print ( -5 )

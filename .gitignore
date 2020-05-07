@@ -342,3 +342,5 @@ healthchecksdb
 # Ignore all the visual studio solution crap, I use this project on linux
 *.sln
 *.vcxproj*
+/statementsInterpreter.zip
+/statementsInterpreter/RafaelDiazCruzLanguageInterpreter

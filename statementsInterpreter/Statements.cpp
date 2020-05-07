@@ -109,7 +109,7 @@ void AssignmentStatement::print() {
 		std::cout << _lhsVariable << " = ";
 
 	if (_rhsExpression == nullptr) {
-		std::cout << "[";				// THIS CODE BELONDS INSIDE THE ARRAY TYPE DESCRIPTOR
+		std::cout << "[";				
 		int size = _array.size()-1;
 		for (int i = 0; i < size; i++) {
 			_array[i]->print();
@@ -145,15 +145,23 @@ void PrintStatement::evaluate(SymTab &symTab) {
 				std::cout << dynamic_cast<IntDescriptor*>(parent)->intValue();
 			else if (parent->type() == TypeDescriptor::DOUBLE)
 				std::cout << dynamic_cast<DblDescriptor*>(parent)->doubleValue();
-			else if (parent->type() == TypeDescriptor::FUNC)
-				parent->print();
+			else if (parent->type() == TypeDescriptor::FUNC) {
+				TypeDescriptor* temp = e->evaluate(symTab);
+				if (temp == nullptr) {
+					std::cout << "The function: "; e->print(); std::cout << " has no return value";
+					exit(1);
+				}
+				else {
+					temp->print();
+				}
+			}
 			else if (parent->type() == TypeDescriptor::STRING)
-				std::cout << "\"" << dynamic_cast<StrDescriptor*>(parent)->stringValue() << "\"";
+				std::cout << dynamic_cast<StrDescriptor*>(parent)->stringValue();
 			else if (parent->type() == TypeDescriptor::ARRAY)
 				dynamic_cast<ArrDescriptor*>(parent)->print();
 			std::cout << " ";
-			/*if (!symTab.isDefined(parent))
-				delete parent;*/
+			if (!symTab.isDefined(parent))
+				delete parent;
 		} else {
 			TypeDescriptor *parent = e->evaluate(symTab);
 			if (parent->type() == TypeDescriptor::INTEGER) 
@@ -161,10 +169,10 @@ void PrintStatement::evaluate(SymTab &symTab) {
 			else if (parent->type() == TypeDescriptor::DOUBLE)
 				std::cout << dynamic_cast<DblDescriptor *>(parent)->doubleValue();
 			else 
-				std::cout << "\"" << dynamic_cast<StrDescriptor *>(parent)->stringValue() << "\"";
+				std::cout << dynamic_cast<StrDescriptor *>(parent)->stringValue();
 			std::cout << " ";
-			/*if (!symTab.isDefined(parent))
-				delete parent;*/
+			if (!symTab.isDefined(parent))
+				delete parent;
 		}
 	}
 	std::cout << std::endl;
